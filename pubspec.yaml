@@ -1,0 +1,61 @@
+name: community_board
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+  flutter: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+
+  #Supabase
+  supabase_flutter: ^2.15.0
+  flutter_dotenv: ^6.0.0
+
+  # Data Class and Functional Programming
+  fpdart: ^1.2.0
+  equatable: ^2.0.8
+  dartz: ^0.10.1
+
+  # UI and Utilities 
+  uuid: ^4.5.3
+  dotenv: ^4.2.0
+  get_it: ^9.2.1
+  bloc: ^9.2.1
+  flutter_bloc: ^9.1.1
+  cached_network_image: ^3.4.1
+  image_picker: ^1.2.2
+  intl: ^0.20.2
+  string_validator: ^1.2.0
+  stream_transform: ^2.1.1
+  
+  #Routing
+  go_router: ^17.3.0
+  passkeys: ^2.21.1
+  
+src: 
+  path: ../packages/src
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  injectable: ^3.0.0
+  injectable_generator: ^3.0.0
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.1
+  json_serializable: ^6.14.0
+ 
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
