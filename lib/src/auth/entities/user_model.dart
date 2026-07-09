@@ -1,18 +1,28 @@
-import 'package:equatable/equatable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'user_entity.dart';
 
-class UserModel extends Equatable {
+part 'user_model.g.dart';
+
+@JsonSerializable(createToJson: false)
+class UserModel extends UserEntity {
   const UserModel({
-    required this.id,
-    required this.name,
-    required this.avatarUrl,
-    required this.role,
+    required super.id,
+    required super.name,
+    @JsonKey(name: 'avatar_url') required super.avatarUrl,
+    required super.role,
   });
 
-  final String id;
-  final String name;
-  final String avatarUrl;
-  final String role;
+  factory UserModel.fromSupabaseUser(User user) {
+    final metaData = user.userMetadata ?? {};
+    return UserModel(
+      id: user.id,
+      name: metaData['name'] as String? ?? '',
+      avatarUrl: metaData['avatar_url'] as String? ?? '',
+      role: metaData['role'] as String? ?? 'user',
+    );
+  }
 
-  @override
-  List<Object> get props => [id, name, avatarUrl, role];
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 }

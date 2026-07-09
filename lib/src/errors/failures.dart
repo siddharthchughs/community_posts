@@ -19,6 +19,16 @@ class NetworkFailure extends Failure {
   const NetworkFailure({required message}) : super("Network Failure: $message");
 }
 
+class AuthenticationFailure extends Failure {
+  const AuthenticationFailure({required message})
+    : super("Authentication Failure: $message");
+}
+
+class PermissionFailure extends Failure {
+  const PermissionFailure({required message})
+    : super("Permission Failure: $message");
+}
+
 class NotFoundFailure extends Failure {
   const NotFoundFailure({required message}) : super("Not Found: $message");
 }
