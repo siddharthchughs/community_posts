@@ -5,7 +5,7 @@ abstract interface class Failure extends Equatable {
   final String message;
 
   @override
-  List<Object> get props => [];
+  List<Object> props() => [];
 
   @override
   String toString() => '${runtimeType.toString()}:$message';

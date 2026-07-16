@@ -13,35 +13,35 @@ class AuthenticationException extends AppException {
   const AuthenticationException({required super.message});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class DatabaseException extends AppException {
   const DatabaseException({required super.message});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class PermissionException extends AppException {
   const PermissionException({required super.message});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class NotFoundException extends AppException {
   const NotFoundException({required super.message});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class StorageServerException extends AppException {
   const StorageServerException({required super.message});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class NetworkException extends AppException {
@@ -52,7 +52,7 @@ class NetworkException extends AppException {
   });
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }
 
 class UnknownException extends AppException {
@@ -63,5 +63,5 @@ class UnknownException extends AppException {
   });
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> props() => throw UnimplementedError();
 }

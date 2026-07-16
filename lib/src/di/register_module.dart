@@ -8,7 +8,7 @@ abstract class RegisterModule {
   @singleton
   SupabaseClient get supabaseClient => Supabase.instance.client;
 
-  @LazySingleton(as: AuthRemoteDatasource)
+  @LazySingleton(as: AuthRemoteDataSource)
   SupabaseAuthRemoteDatasource get authRemoteDataSource;
 
   @LazySingleton(as: AuthRepository)

@@ -6,7 +6,7 @@ import '../../../errors.dart';
 import '../../constants/app_constants.dart';
 import '../auth.dart';
 
-class SupabaseAuthRemoteDatasource implements AuthRemoteDatasource {
+class SupabaseAuthRemoteDatasource implements AuthRemoteDataSource {
   SupabaseAuthRemoteDatasource({required this.supabaseClient});
   final SupabaseClient supabaseClient;
 

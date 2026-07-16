@@ -8,7 +8,7 @@ import '../auth.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl({required this.authRemoteDatasource});
-  final AuthRemoteDatasource authRemoteDatasource;
+  final AuthRemoteDataSource authRemoteDatasource;
 
   @override
   Stream<UserEntity?> get onAuthStateChnaged {

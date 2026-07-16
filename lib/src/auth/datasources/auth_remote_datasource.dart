@@ -1,6 +1,6 @@
 import '../auth.dart';
 
-abstract interface class AuthRemoteDatasource {
+abstract interface class AuthRemoteDataSource {
   Stream<UserModel?> get onAuthStateChnaged;
   Future<UserModel> userSignUp({
     required String email,

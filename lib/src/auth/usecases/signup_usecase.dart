@@ -7,17 +7,17 @@ import '../repository/auth_repository.dart';
 
 class UserSignupUsecase extends Equatable {
   const UserSignupUsecase({
+    required this.username,
     required this.email,
     required this.password,
-    required this.username,
   });
 
+  final String username;
   final String email;
   final String password;
-  final String username;
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> props() => [email, password, username];
 }
 
 class SignupUsecase implements Usecase<void, UserSignupUsecase> {
