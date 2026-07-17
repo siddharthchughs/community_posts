@@ -5,8 +5,8 @@ import '../../errors/failures.dart';
 import '../../usecase/usecase_interface.dart';
 import '../repository/auth_repository.dart';
 
-class UserSignupUsecase extends Equatable {
-  const UserSignupUsecase({
+class UserSignupParams extends Equatable {
+  const UserSignupParams({
     required this.username,
     required this.email,
     required this.password,
@@ -20,14 +20,14 @@ class UserSignupUsecase extends Equatable {
   List<Object> props() => [email, password, username];
 }
 
-class SignupUsecase implements Usecase<void, UserSignupUsecase> {
+class SignupUsecase implements Usecase<void, UserSignupParams> {
   SignupUsecase({required this.repository});
 
   final AuthRepository repository;
 
   @override
-  Future<Either<Failure, void>> call(UserSignupUsecase params) {
-    return repository.signup(
+  Future<Either<Failure, void>> call(UserSignupParams params) async {
+    return await repository.signup(
       email: params.email,
       password: params.password,
       username: params.username,

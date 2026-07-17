@@ -12,7 +12,7 @@ abstract class RouteLocation {
   static const String postEdit = 'edit';
 
   // profile edit
-  static const String profileEdit = 'profile_edit';
+  static const String profileEdit = 'edit';
 
   static const String postCreate = '/create';
   static const String userDetail = '/user/:userId';

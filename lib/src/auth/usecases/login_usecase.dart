@@ -4,8 +4,8 @@ import '../../usecase/usecase_interface.dart';
 import 'package:dartz/dartz.dart';
 import '../repository/auth_repository.dart';
 
-class UserLoginUseCase extends Equatable {
-  const UserLoginUseCase({required this.email, required this.password});
+class UserLoginParams extends Equatable {
+  const UserLoginParams({required this.email, required this.password});
 
   final String email;
   final String password;
@@ -14,13 +14,16 @@ class UserLoginUseCase extends Equatable {
   List<Object?> props() => [email, password];
 }
 
-class UserLogin implements Usecase<void, UserLoginUseCase> {
-  UserLogin({required this.repository});
+class UserLoginUseCase implements Usecase<void, UserLoginParams> {
+  UserLoginUseCase({required this.repository});
 
   final AuthRepository repository;
 
   @override
-  Future<Either<Failure, void>> call(UserLoginUseCase params) {
-    return repository.login(email: params.email, password: params.password);
+  Future<Either<Failure, void>> call(UserLoginParams params) async {
+    return await repository.login(
+      email: params.email,
+      password: params.password,
+    );
   }
 }

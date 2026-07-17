@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../blocs/login/login_bloc.dart';
-
 class MyProfilePage extends StatelessWidget {
   const MyProfilePage({super.key});
 

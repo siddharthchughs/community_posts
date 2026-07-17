@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:get_it/get_it.dart' as _i174;
+import 'package:go_router/go_router.dart' as _i583;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
 
@@ -34,12 +35,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i607.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource,
     );
-    gh.factory<_i607.UserLoginUseCase>(() => registerModule.userLoginUsecase);
     gh.lazySingleton<_i607.AuthRepository>(() => registerModule.authRepository);
-    gh.factory<_i1018.LoginBloc>(
-      () => _i1018.LoginBloc(loginUsecase: gh<_i727.UserLoginUseCase>()),
-    );
     gh.factory<_i607.SignupUsecase>(() => registerModule.signupUsecase);
+    gh.factory<_i607.UserLoginUseCase>(() => registerModule.userLoginUsecase);
     gh.factory<_i607.UserLogout>(() => registerModule.logoutUsecase);
     gh.singleton<_i652.AuthenticationBloc>(
       () => _i652.AuthenticationBloc(
@@ -47,6 +45,12 @@ extension GetItInjectableX on _i174.GetIt {
         logoutUsecase: gh<_i727.UserLogout>(),
       ),
       dispose: (i) => i.close(),
+    );
+    gh.singleton<_i583.GoRouter>(
+      () => registerModule.router(gh<_i652.AuthenticationBloc>()),
+    );
+    gh.factory<_i1018.LoginBloc>(
+      () => _i1018.LoginBloc(loginUsecase: gh<_i727.UserLoginUseCase>()),
     );
     gh.factory<_i41.SignupBloc>(
       () => _i41.SignupBloc(signupUsecase: gh<_i750.SignupUsecase>()),
@@ -67,12 +71,6 @@ class _$RegisterModule extends _i291.RegisterModule {
       );
 
   @override
-  _i607.UserLoginUseCase get userLoginUsecase => _i607.UserLoginUseCase(
-    email: _getIt<String>(),
-    password: _getIt<String>(),
-  );
-
-  @override
   _i607.AuthRepositoryImpl get authRepository => _i607.AuthRepositoryImpl(
     authRemoteDatasource: _getIt<_i607.AuthRemoteDataSource>(),
   );
@@ -80,6 +78,10 @@ class _$RegisterModule extends _i291.RegisterModule {
   @override
   _i607.SignupUsecase get signupUsecase =>
       _i607.SignupUsecase(repository: _getIt<_i607.AuthRepository>());
+
+  @override
+  _i607.UserLoginUseCase get userLoginUsecase =>
+      _i607.UserLoginUseCase(repository: _getIt<_i607.AuthRepository>());
 
   @override
   _i607.UserLogout get logoutUsecase =>

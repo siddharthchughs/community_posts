@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
+
 import '../../../../../src/auth/auth.dart';
 import '../../../../../src/errors/errors.dart';
 import '../../../../../src/utils/auth_states.dart';
@@ -25,7 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(const LoadProgressState());
 
     final result = await _loginUseCase(
-      UserLoginUseCase(email: event.username, password: event.password),
+      UserLoginParams(email: event.username, password: event.password),
     );
 
     result.fold(

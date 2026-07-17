@@ -20,5 +20,5 @@ class AuthenticationState extends Equatable {
   final UserEntity? user;
 
   @override
-  List<Object?> get props => [status, user];
+  List<Object?> props() => [status, user];
 }

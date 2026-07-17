@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../../src/auth/auth.dart';
 import '../../../../../src/usecase/usecase_interface.dart';
+
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 

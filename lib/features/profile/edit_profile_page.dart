@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../blocs/login/login_bloc.dart';
-
 class EditProfilePage extends StatelessWidget {
   const EditProfilePage({super.key});
 

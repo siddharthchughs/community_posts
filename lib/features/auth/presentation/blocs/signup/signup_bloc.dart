@@ -25,7 +25,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   ) async {
     emit(const SignupProgress());
     final result = await _signupUsecase(
-      UserSignupUsecase(
+      UserSignupParams(
         username: event.username,
         email: event.email,
         password: event.password,

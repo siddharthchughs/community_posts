@@ -7,6 +7,9 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('Splash Screen');
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      backgroundColor: Colors.amberAccent,
+      body: Center(child: Text('Splash Screen')),
+    );
   }
 }

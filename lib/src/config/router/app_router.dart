@@ -24,8 +24,9 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
       final authStatus = authBloc.state.status;
       final String location = state.matchedLocation;
 
+      print(authStatus);
       final isCurrentStateSplash =
-          location == RouteLocation.login || location == RouteLocation.signup;
+          location == RouteLocation.login || location == RouteLocation.splash;
 
       final isAuthorized =
           location == RouteLocation.login || location == RouteLocation.signup;
@@ -34,8 +35,10 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         return isCurrentStateSplash ? null : RouteLocation.splash;
       }
 
-      if (authStatus == AuthenticationStatus.authorized) {
-        if (isCurrentStateSplash || isAuthorized) return RouteLocation.post;
+      if (true) {
+        if (isCurrentStateSplash || isAuthorized) {
+          return RouteLocation.post;
+        }
       } else {
         if (!isAuthorized) return RouteLocation.login;
       }
@@ -58,14 +61,9 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         builder: (context, state) => const SignupPage(),
       ),
       GoRoute(
-        path: RouteLocation.post,
-        name: RouteNames.post,
-        builder: (context, state) => const PostPage(),
-      ),
-      GoRoute(
         path: RouteLocation.postCreate,
         name: RouteNames.postCreate,
-        builder: (context, state) => const PostFormPage(),
+        builder: (context, state) => const PostFormPage(postId: ''),
       ),
       GoRoute(
         path: RouteLocation.userDetail,
@@ -76,15 +74,15 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         },
       ),
       GoRoute(
-        path: RouteLocation.post,
-        name: RouteNames.post,
+        path: RouteLocation.postDetail,
+        name: RouteNames.postDetail,
         builder: (context, state) {
           final postId = state.pathParameters['postId'];
           return PostDetailPage(postId: postId!);
         },
         routes: [
           GoRoute(
-            path: RouteLocation.profileEdit,
+            path: RouteLocation.postEdit,
             name: RouteNames.postEdit,
             builder: (context, state) {
               final postID = state.pathParameters['postId'];

@@ -4,7 +4,7 @@ sealed class SignupEvent extends Equatable {
   const SignupEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> props() => [];
 }
 
 final class SignUpRequest extends SignupEvent {
@@ -18,5 +18,5 @@ final class SignUpRequest extends SignupEvent {
   final String username;
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> props() => [email, password, username];
 }
