@@ -6,6 +6,27 @@ import '../../../errors.dart';
 import '../../constants/app_constants.dart';
 import '../auth.dart';
 
+String resolveSupabaseAuthErrorMessage(
+  String message, {
+  required bool forSignup,
+}) {
+  final normalized = message.toLowerCase();
+  final isRateLimit =
+      normalized.contains('rate limit') ||
+      normalized.contains('too many requests') ||
+      normalized.contains('429') ||
+      normalized.contains('exceeded');
+
+  if (isRateLimit) {
+    if (forSignup) {
+      return 'Too many signup attempts. Please wait a few minutes or use another email address.';
+    }
+    return 'Too many login attempts. Please wait a few minutes and try again.';
+  }
+
+  return message;
+}
+
 class SupabaseAuthRemoteDatasource implements AuthRemoteDataSource {
   SupabaseAuthRemoteDatasource({required this.supabaseClient});
   final SupabaseClient supabaseClient;
@@ -79,10 +100,7 @@ class SupabaseAuthRemoteDatasource implements AuthRemoteDataSource {
       final AuthResponse _response = await supabaseClient.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'username': username,
-          'role': email.contains('admin') ? 'admin' : Role.user,
-        },
+        data: {'username': username, 'role': Role.user},
       );
 
       final User? user = _response.user;
@@ -93,7 +111,9 @@ class SupabaseAuthRemoteDatasource implements AuthRemoteDataSource {
       }
       return UserModel.fromSupabaseUser(user);
     } on AuthException catch (e) {
-      throw AuthenticationException(message: e.message);
+      throw AuthenticationException(
+        message: resolveSupabaseAuthErrorMessage(e.message, forSignup: true),
+      );
     } on AuthenticationException {
       rethrow;
     } on SocketException {

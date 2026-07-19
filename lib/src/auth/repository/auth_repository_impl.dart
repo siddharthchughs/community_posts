@@ -18,7 +18,8 @@ class AuthRepositoryImpl implements AuthRepository {
         controller.add(userModel);
       },
       onError: (error) {
-        controller.addError(error);
+        print('Auth Stream Error: $error');
+        controller.add(null);
       },
     );
 
@@ -41,7 +42,7 @@ class AuthRepositoryImpl implements AuthRepository {
         username: username,
       );
       return const Right(null);
-    } on AuthApiException catch (e) {
+    } on AuthenticationException catch (e) {
       return Left(AuthenticationFailure(message: e.message));
     } on NetworkException {
       return const Left(NetworkFailure(message: 'Network error occurred'));

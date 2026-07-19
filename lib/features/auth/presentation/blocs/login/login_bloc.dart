@@ -26,7 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(const LoadProgressState());
 
     final result = await _loginUseCase(
-      UserLoginParams(email: event.username, password: event.password),
+      UserLoginParams(email: event.email, password: event.password),
     );
 
     result.fold(

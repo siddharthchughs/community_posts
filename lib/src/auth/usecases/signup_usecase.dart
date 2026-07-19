@@ -17,7 +17,7 @@ class UserSignupParams extends Equatable {
   final String password;
 
   @override
-  List<Object> props() => [email, password, username];
+  List<Object> props() => [username, email, password];
 }
 
 class SignupUsecase implements Usecase<void, UserSignupParams> {

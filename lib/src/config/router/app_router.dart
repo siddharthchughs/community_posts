@@ -35,10 +35,8 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         return isCurrentStateSplash ? null : RouteLocation.splash;
       }
 
-      if (true) {
-        if (isCurrentStateSplash || isAuthorized) {
-          return RouteLocation.post;
-        }
+      if (authStatus == AuthenticationStatus.authorized) {
+        if (isCurrentStateSplash || isAuthorized) return RouteLocation.post;
       } else {
         if (!isAuthorized) return RouteLocation.login;
       }
@@ -63,7 +61,7 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
       GoRoute(
         path: RouteLocation.postCreate,
         name: RouteNames.postCreate,
-        builder: (context, state) => const PostFormPage(postId: ''),
+        builder: (context, state) => const PostFormPage(),
       ),
       GoRoute(
         path: RouteLocation.userDetail,

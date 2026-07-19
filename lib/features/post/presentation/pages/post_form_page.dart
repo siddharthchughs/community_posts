@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PostFormPage extends StatelessWidget {
-  const PostFormPage({super.key, required this.postId});
+  const PostFormPage({super.key, this.postId});
   final String? postId;
 
   @override
