@@ -1,0 +1,11 @@
+framework module passkeys_darwin {
+  umbrella header "passkeys_darwin-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module passkeys_darwin.Swift {
+  header "passkeys_darwin-Swift.h"
+  requires objc
+}

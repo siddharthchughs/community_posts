@@ -1,0 +1,1 @@
+export 'posts_display_model.dart';
