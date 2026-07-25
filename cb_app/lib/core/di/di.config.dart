@@ -22,6 +22,7 @@ import '../../features/auth/presentation/blocs/authentication/authentication_blo
     as _i652;
 import '../../features/auth/presentation/blocs/login/login_bloc.dart' as _i1018;
 import '../../features/auth/presentation/blocs/signup/signup_bloc.dart' as _i41;
+import '../../features/post/presentation/bloc/post_bloc.dart' as _i896;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -53,6 +54,9 @@ extension GetItInjectableX on _i174.GetIt {
         logoutUsecase: gh<_i378.UserLogout>(),
       ),
       dispose: (i) => i.close(),
+    );
+    gh.factory<_i896.PostBloc>(
+      () => _i896.PostBloc(getPostUseCase: gh<_i458.GetPostsUsecases>()),
     );
     gh.factory<_i1018.LoginBloc>(
       () => _i1018.LoginBloc(loginUsecase: gh<_i378.UserLoginUseCase>()),
