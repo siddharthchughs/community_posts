@@ -11,7 +11,7 @@ abstract class Tables {
 }
 
 abstract class Views {
-  static const String postDisplayViews = 'posts_display_view';
+  static const String postDisplayViews = 'post_display_view';
   static const String commentDisplayViews = 'comment_display_view';
 }
 
@@ -37,5 +37,5 @@ abstract class DBFunctions {
 
 abstract class PostgresErrors {
   static const String insufficientPrivilege = '42501';
-  
+  static const String moreThanOneorMoreItemsreturned = 'P0002';
 }

@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 part 'post_event.dart';
 part 'post_state.dart';
 
-const _page_size = 6;
+const _page_size = 8;
 
 @injectable
 class PostBloc extends Bloc<PostEvent, PostListState> {
@@ -38,14 +38,21 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
       const GetPostsParams(offset: 0, limit: _page_size),
     );
     response.fold(
-      (failure) => emit(state.copyWith(state: PostUIState.failure)),
-      (posts) => emit(
-        state.copyWith(
-          state: PostUIState.loaded,
-          posts: posts,
-          isLimitMax: posts.length < _page_size,
-        ),
-      ),
+      (failure) {
+        return emit(
+          state.copyWith(state: PostUIState.failure, failure: () => failure),
+        );
+      },
+      (posts) {
+        print('Posts Length :: ${posts} ');
+        return emit(
+          state.copyWith(
+            state: PostUIState.loaded,
+            posts: posts,
+            isLimitMax: posts.length < _page_size,
+          ),
+        );
+      },
     );
   }
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/di.dart';
-import '../bloc/post_bloc.dart';
+import '../bloc/post/post_bloc.dart';
 import '../widget/post_card_item.dart';
 
 class PostPage extends StatelessWidget {
@@ -48,7 +48,7 @@ class _PostPageView extends State<PostPageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Posts')),
+      appBar: AppBar(title: const Text('Posts')),
       body: BlocConsumer<PostBloc, PostListState>(
         listenWhen: (previous, current) {
           final isTransientFailure =
@@ -56,8 +56,17 @@ class _PostPageView extends State<PostPageView> {
               current.transientFailure != null;
           return isTransientFailure;
         },
+        listener: (context, state) {
+          if (state.transientFailure != null) {
+            showSnackbar(context, message: state.transientFailure!.message);
+            context.read<PostBloc>().add(PostsTransientFailureConsumed());
+          }
+        },
         builder: (context, state) {
+          print(state.posts.isEmpty);
+          print(state.failure);
           return switch (state.state) {
+            PostUIState.initial => Placeholder(),
             PostUIState.loading => const Center(
               child: CircularProgressIndicator(),
             ),
@@ -82,11 +91,7 @@ class _PostPageView extends State<PostPageView> {
                 ),
               ),
             ),
-
-            // PostUIState.loadingmore => throw UnimplementedError(),
-            // PostUIState.morepostadded => throw UnimplementedError(),
-            // PostUIState.refresh => throw UnimplementedError(),
-            _ when state.posts.isEmpty => RefreshIndicator(
+            PostUIState.loaded when state.posts.isEmpty => RefreshIndicator(
               onRefresh: () async {
                 context.read<PostBloc>().add(PostsRefreshed());
               },
@@ -115,12 +120,12 @@ class _PostPageView extends State<PostPageView> {
               },
               child: ListView.builder(
                 controller: _scrollController,
-                physics: AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: state.isLimitMax
                     ? state.posts.length
                     : state.posts.length + 1,
                 itemBuilder: (context, index) {
-                  if (index > state.posts.length) {
+                  if (index >= state.posts.length) {
                     return (state.state == PostUIState.loadingmore)
                         ? const Center(child: CircularProgressIndicator())
                         : const SizedBox.shrink();
@@ -134,12 +139,6 @@ class _PostPageView extends State<PostPageView> {
               ),
             ),
           };
-        },
-        listener: (context, state) {
-          if (state.transientFailure != null) {
-            showSnackbar(context, message: state.transientFailure!.message);
-            context.read<PostBloc>().add(PostsTransientFailureConsumed());
-          }
         },
       ),
     );

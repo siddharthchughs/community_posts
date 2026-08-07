@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/ua_client_hints.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		qw/6gkIg21HgT7mE1edjk5ESk1U=
+		5H1anj1eoWZ/BsxyqIrPjFB5NCg=
 		</data>
 		<key>Modules/ua_client_hints.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>Modules/ua_client_hints.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		CkSj11J2EkMM80cwK0Mf46TS6tE=
+		CJk6A6VfrpMGwW2ykgLtI9Id5xQ=
 		</data>
 		<key>ua_client_hints_privacy.bundle/Info.plist</key>
 		<data>
@@ -116,7 +116,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			3khSas9SgMMMMjMnLvZ1X2ETyZGG+OyR5a8GtTLySPY=
+			qF5ULX27OuZR3sldyztCEAYkWwd2+1CFgUvJCzsdnxk=
 			</data>
 		</dict>
 		<key>Modules/ua_client_hints.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -137,7 +137,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			hIqOkxc5aRjfDoIIFkrSY+XdGLwUhWki8cb0EmgNXs0=
+			INjQEq8IZD4WR5x8nNZHrhVs3nisCZ8WGcOJgrTbFvc=
 			</data>
 		</dict>
 		<key>ua_client_hints_privacy.bundle/Info.plist</key>

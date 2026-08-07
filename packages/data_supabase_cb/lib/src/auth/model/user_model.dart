@@ -8,7 +8,7 @@ part 'user_model.g.dart';
 class UserModel extends UserEntity {
   const UserModel({
     required super.id,
-    required super.name,
+    required super.username,
     @JsonKey(name: 'avatar_url') required super.avatarUrl,
     required super.role,
   });
@@ -17,7 +17,7 @@ class UserModel extends UserEntity {
     final metaData = user.userMetadata ?? {};
     return UserModel(
       id: user.id,
-      name: metaData['name'] as String? ?? '',
+      username: metaData['username'] as String? ?? '',
       avatarUrl: metaData['avatar_url'] as String? ?? '',
       role: metaData['role'] as String? ?? 'user',
     );

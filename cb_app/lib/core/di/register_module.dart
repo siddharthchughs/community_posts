@@ -41,4 +41,10 @@ abstract class RegisterModule {
 
   @injectable
   GetPostsUsecases get getPostsUsecases;
+
+  @injectable
+  CreatePostUseCase get createPostUsecases;
+
+  @injectable
+  UploadPostImageUseCase get uploadImageUsecases;
 }

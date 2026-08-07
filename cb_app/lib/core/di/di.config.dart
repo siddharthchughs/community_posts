@@ -22,7 +22,9 @@ import '../../features/auth/presentation/blocs/authentication/authentication_blo
     as _i652;
 import '../../features/auth/presentation/blocs/login/login_bloc.dart' as _i1018;
 import '../../features/auth/presentation/blocs/signup/signup_bloc.dart' as _i41;
-import '../../features/post/presentation/bloc/post_bloc.dart' as _i896;
+import '../../features/post/presentation/bloc/post/post_bloc.dart' as _i532;
+import '../../features/post/presentation/bloc/post_form/post_form_bloc.dart'
+    as _i686;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -44,6 +46,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.postRepsitoryImpl,
     );
     gh.factory<_i458.GetPostsUsecases>(() => registerModule.getPostsUsecases);
+    gh.factory<_i458.UploadPostImageUseCase>(
+      () => registerModule.uploadImageUsecases,
+    );
     gh.lazySingleton<_i378.AuthRepository>(() => registerModule.authRepository);
     gh.factory<_i378.SignupUsecase>(() => registerModule.signupUsecase);
     gh.factory<_i378.UserLoginUseCase>(() => registerModule.userLoginUsecase);
@@ -55,11 +60,20 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.close(),
     );
-    gh.factory<_i896.PostBloc>(
-      () => _i896.PostBloc(getPostUseCase: gh<_i458.GetPostsUsecases>()),
+    gh.factory<_i532.PostBloc>(
+      () => _i532.PostBloc(getPostUseCase: gh<_i458.GetPostsUsecases>()),
     );
     gh.factory<_i1018.LoginBloc>(
       () => _i1018.LoginBloc(loginUsecase: gh<_i378.UserLoginUseCase>()),
+    );
+    gh.factory<_i458.CreatePostUseCase>(
+      () => registerModule.createPostUsecases,
+    );
+    gh.factory<_i686.PostFormBloc>(
+      () => _i686.PostFormBloc(
+        createPostUsecase: gh<_i458.CreatePostUseCase>(),
+        uploadImageUsecase: gh<_i458.UploadPostImageUseCase>(),
+      ),
     );
     gh.factory<_i41.SignupBloc>(
       () => _i41.SignupBloc(signupUsecase: gh<_i378.SignupUsecase>()),
@@ -98,6 +112,12 @@ class _$RegisterModule extends _i291.RegisterModule {
       _i458.GetPostsUsecases(postRepository: _getIt<_i458.PostsRepository>());
 
   @override
+  _i458.UploadPostImageUseCase get uploadImageUsecases =>
+      _i458.UploadPostImageUseCase(
+        postRepository: _getIt<_i458.PostsRepository>(),
+      );
+
+  @override
   _i561.AuthRepositoryImpl get authRepository => _i561.AuthRepositoryImpl(
     authRemoteDatasource: _getIt<_i561.AuthRemoteDataSource>(),
   );
@@ -113,4 +133,8 @@ class _$RegisterModule extends _i291.RegisterModule {
   @override
   _i378.UserLogout get logoutUsecase =>
       _i378.UserLogout(repository: _getIt<_i378.AuthRepository>());
+
+  @override
+  _i458.CreatePostUseCase get createPostUsecases =>
+      _i458.CreatePostUseCase(postReository: _getIt<_i458.PostsRepository>());
 }

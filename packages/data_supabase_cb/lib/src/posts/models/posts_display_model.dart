@@ -21,6 +21,21 @@ class PostsDisplayModel extends PostDisplayEntity {
     required super.currentUserLiked,
   });
 
+  static int _safeIntFromJson(Object? value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
+
+  static bool _safeBoolFromJson(Object? value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    final normalized = value.toString().toLowerCase();
+    return normalized == 'true' || normalized == '1';
+  }
+
   factory PostsDisplayModel.fromJson(Map<String, dynamic> json) =>
       _$PostsDisplayModelFromJson(json);
 
@@ -56,15 +71,18 @@ class PostsDisplayModel extends PostDisplayEntity {
   @override
   String get authorRole;
 
-  @JsonKey(name: 'like_count')
+  @JsonKey(name: 'like_count', fromJson: PostsDisplayModel._safeIntFromJson)
   @override
   int get likeCount;
 
-  @JsonKey(name: 'comments_count')
+  @JsonKey(name: 'comments_count', fromJson: PostsDisplayModel._safeIntFromJson)
   @override
   int get commentCount;
 
-  @JsonKey(name: 'current_user_like')
+  @JsonKey(
+    name: 'current_user_like',
+    fromJson: PostsDisplayModel._safeBoolFromJson,
+  )
   @override
   bool get currentUserLiked;
 }

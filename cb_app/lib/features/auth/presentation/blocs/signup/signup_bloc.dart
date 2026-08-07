@@ -5,8 +5,6 @@ import 'package:domain/auth.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 
-import 'signup_bloc.dart';
-
 part 'signup_event.dart';
 part 'signup_state.dart';
 
