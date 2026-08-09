@@ -16,7 +16,7 @@ abstract class Views {
 }
 
 abstract class Storage {
-  static const String postImages = 'post_images';
+  static const String postImages = 'post-images';
   static const String profileImages = 'profile_images';
 }
 

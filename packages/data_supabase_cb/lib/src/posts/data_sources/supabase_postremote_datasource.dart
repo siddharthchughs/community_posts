@@ -158,7 +158,10 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
     } on AuthenticationException {
       rethrow;
     } on StorageException catch (e) {
-      throw StorageServerException(message: e.message);
+      throw StorageServerException(
+        message:
+            'Storage bucket "${Storage.postImages}" is unavailable: ${e.message}',
+      );
     } on SocketException {
       throw const NetworkException();
     } catch (e) {

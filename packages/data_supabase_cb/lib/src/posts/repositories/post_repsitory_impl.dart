@@ -78,6 +78,7 @@ class PostRepsitoryImpl implements PostsRepository {
         image: image,
         postId: postId,
       );
+      print('Image Upload Result :: ${imageUpload} ');
       return Right(imageUpload);
     } on AuthenticationException catch (e) {
       return Left(AuthenticationFailure(message: e.message));
