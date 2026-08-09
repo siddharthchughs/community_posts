@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:core/errors.dart';
 import 'package:domain/posts.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
+
+import '../../../../../core/bus/global_event.dart';
+import '../../../../../core/bus/global_event_bus.dart';
 
 part 'post_event.dart';
 part 'post_state.dart';
@@ -11,16 +16,26 @@ const _page_size = 8;
 
 @injectable
 class PostBloc extends Bloc<PostEvent, PostListState> {
-  PostBloc({required GetPostsUsecases getPostUseCase})
-    : _getPostsUsecases = getPostUseCase,
-      super(const PostListState()) {
+  PostBloc({
+    required GetPostsUsecases getPostUseCase,
+    required GlobalEventBus globalEventBus,
+  }) : _getPostsUsecases = getPostUseCase,
+       _globalEventBus = globalEventBus,
+       super(const PostListState()) {
     on<PostsFetched>(_getPostListLoaded);
     on<PostMorePostsFetched>(_morePostFetched);
     on<PostsRefreshed>(_newPostListUpdted);
     on<PostsTransientFailureConsumed>(_postListTransientFailureConsumed);
+    on<_GlobalEventReceived>(_onGlobalEventReceived);
+
+    _globalEventSubscription = _globalEventBus.stream.listen((event) {
+      add(_GlobalEventReceived(event: event));
+    });
   }
 
   final GetPostsUsecases _getPostsUsecases;
+  final GlobalEventBus _globalEventBus;
+  StreamSubscription<GlobalEvent>? _globalEventSubscription;
 
   bool get _isBusy =>
       state.state == PostUIState.loading ||
@@ -120,5 +135,23 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     Emitter<PostListState> emit,
   ) {
     emit(state.copyWith(transientFailure: () => null));
+  }
+
+  void _onGlobalEventReceived(
+    _GlobalEventReceived event,
+    Emitter<PostListState> emit,
+  ) {
+    if (state.state != PostUIState.loadingmore && _isBusy) return;
+    switch (event.event) {
+      case PostCreatedDispacted(posts: final newPost):
+        final currentPosts = state.posts;
+        emit(state.copyWith(posts: [newPost, ...currentPosts]));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _globalEventSubscription?.cancel();
+    return super.close();
   }
 }

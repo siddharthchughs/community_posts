@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/config/router/router_constants.dart';
 import '../auth/presentation/blocs/authentication/authentication_bloc.dart';
-import 'package:flutter/cupertino.dart';
 
 class MyProfilePage extends StatelessWidget {
   const MyProfilePage({super.key});
@@ -14,9 +13,14 @@ class MyProfilePage extends StatelessWidget {
   Widget build(BuildContext context) => const MyProfilePageView();
 }
 
-class MyProfilePageView extends StatelessWidget {
+class MyProfilePageView extends StatefulWidget {
   const MyProfilePageView({super.key});
 
+  @override
+  State<StatefulWidget> createState() => _MyProfilePageViewState();
+}
+
+class _MyProfilePageViewState extends State<MyProfilePageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,17 +39,18 @@ class MyProfilePageView extends StatelessWidget {
         ],
       ),
       body: const Center(child: Text('MyProfile Page View')),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton:
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
             builder: (context, state) {
-              print(state.user?.username);
-              print(state.user?.role);
-              if (state.user?.role == Role.admin) {
+              final role = state.user?.role.trim().toLowerCase();
+              if (role == Role.admin) {
                 return FloatingActionButton(
+                  heroTag: 'create_post',
                   onPressed: () {
                     context.push(RouteLocation.postCreate);
                   },
-                  child: const Icon(Icons.add),
+                  child: const Icon(Icons.add, color: Colors.blueAccent),
                 );
               }
               return const SizedBox.shrink();

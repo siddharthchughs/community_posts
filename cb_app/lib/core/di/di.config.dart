@@ -25,6 +25,7 @@ import '../../features/auth/presentation/blocs/signup/signup_bloc.dart' as _i41;
 import '../../features/post/presentation/bloc/post/post_bloc.dart' as _i532;
 import '../../features/post/presentation/bloc/post_form/post_form_bloc.dart'
     as _i686;
+import '../bus/global_event_bus.dart' as _i91;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -35,6 +36,10 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule(this);
+    gh.singleton<_i91.GlobalEventBus>(
+      () => _i91.GlobalEventBus(),
+      dispose: (i) => i.dispose(),
+    );
     gh.singleton<_i454.SupabaseClient>(() => registerModule.supabaseClient);
     gh.lazySingleton<_i230.PostRemoteDataSource>(
       () => registerModule.postRemoteDataSource,
@@ -60,26 +65,30 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.close(),
     );
-    gh.factory<_i532.PostBloc>(
-      () => _i532.PostBloc(getPostUseCase: gh<_i458.GetPostsUsecases>()),
-    );
     gh.factory<_i1018.LoginBloc>(
       () => _i1018.LoginBloc(loginUsecase: gh<_i378.UserLoginUseCase>()),
     );
+    gh.factory<_i532.PostBloc>(
+      () => _i532.PostBloc(
+        getPostUseCase: gh<_i458.GetPostsUsecases>(),
+        globalEventBus: gh<_i91.GlobalEventBus>(),
+      ),
+    );
     gh.factory<_i458.CreatePostUseCase>(
       () => registerModule.createPostUsecases,
-    );
-    gh.factory<_i686.PostFormBloc>(
-      () => _i686.PostFormBloc(
-        createPostUsecase: gh<_i458.CreatePostUseCase>(),
-        uploadImageUsecase: gh<_i458.UploadPostImageUseCase>(),
-      ),
     );
     gh.factory<_i41.SignupBloc>(
       () => _i41.SignupBloc(signupUsecase: gh<_i378.SignupUsecase>()),
     );
     gh.singleton<_i583.GoRouter>(
       () => registerModule.router(gh<_i652.AuthenticationBloc>()),
+    );
+    gh.factory<_i686.PostFormBloc>(
+      () => _i686.PostFormBloc(
+        createPostUsecase: gh<_i458.CreatePostUseCase>(),
+        uploadImageUsecase: gh<_i458.UploadPostImageUseCase>(),
+        globalEventBus: gh<_i91.GlobalEventBus>(),
+      ),
     );
     return this;
   }
