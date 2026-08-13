@@ -13,6 +13,9 @@ class PostDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Post Detail Page View')));
+    return Scaffold(
+      appBar: AppBar(title: Text('Post Detail Page')),
+      body: Center(child: Text('Post Detail Page View')),
+    );
   }
 }

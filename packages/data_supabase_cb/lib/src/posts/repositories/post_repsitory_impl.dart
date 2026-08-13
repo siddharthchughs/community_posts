@@ -32,6 +32,8 @@ class PostRepsitoryImpl implements PostsRepository {
       return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
     } on UnknownException catch (e) {
       return Left(UnknownFailure(message: e.message));
     }
@@ -86,6 +88,56 @@ class PostRepsitoryImpl implements PostsRepository {
       return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CommentDisplay>>> getPostComments({
+    required String postId,
+    required int offset,
+    required int limit,
+  }) async {
+    try {
+      final postComments = await _postRemoteDataSource.getPostComments(
+        postId: postId,
+        offset: offset,
+        limit: limit,
+      );
+      return Right(postComments);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PostDisplayEntity>> getPostDetail({
+    required String postId,
+  }) async {
+    try {
+      final post = await _postRemoteDataSource.getPostDetail(postId: postId);
+      return Right(post);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
     } on UnknownException catch (e) {
       return Left(UnknownFailure(message: e.message));
     }
