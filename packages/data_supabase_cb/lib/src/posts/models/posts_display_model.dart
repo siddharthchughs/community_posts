@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'posts_display_model.g.dart';
 
 @JsonSerializable(createToJson: false)
-class PostsDisplayModel extends PostDisplayEntity {
+class PostsDisplayModel extends PostDisplay {
   const PostsDisplayModel({
     required super.postId,
     required super.title,

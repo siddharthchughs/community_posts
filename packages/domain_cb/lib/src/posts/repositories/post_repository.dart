@@ -6,12 +6,12 @@ import '../dto/image_upload_result.dart';
 import '../entities/entities.dart';
 
 abstract interface class PostsRepository {
-  Future<Either<Failure, List<PostDisplayEntity>>> getPosts({
+  Future<Either<Failure, List<PostDisplay>>> getPosts({
     required int offset,
     required int limit,
   });
 
-  Future<Either<Failure, PostDisplayEntity>> createPost({
+  Future<Either<Failure, PostDisplay>> createPost({
     String? postId,
     required String title,
     required String content,
@@ -21,5 +21,13 @@ abstract interface class PostsRepository {
   Future<Either<Failure, ImageUploadResult>> uploadPostImage({
     required File image,
     String? postId,
+  });
+
+  Future<Either<Failure, PostDisplay>> getPostDetail({required String postId});
+
+  Future<Either<Failure, List<CommentDisplay>>> getPostComments({
+    required String postId,
+    required int offset,
+    required int limit,
   });
 }

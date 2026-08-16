@@ -21,7 +21,7 @@ class PostListState extends Equatable {
   });
 
   final PostUIState state;
-  final List<PostDisplayEntity> posts;
+  final List<PostDisplay> posts;
   final bool isLimitMax;
   final Failure? failure;
   final Failure? transientFailure;
@@ -29,7 +29,7 @@ class PostListState extends Equatable {
 
   PostListState copyWith({
     PostUIState? state,
-    List<PostDisplayEntity>? posts,
+    List<PostDisplay>? posts,
     bool? isLimitMax,
     Failure? Function()? failure,
     Failure? Function()? transientFailure,

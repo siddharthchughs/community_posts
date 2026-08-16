@@ -181,7 +181,6 @@ class _PostFormState extends State<PostFormView> {
     return Column(
       children: [
         const SizedBox(height: 20),
-
         TextFormField(
           controller: _titleTextController,
           decoration: const InputDecoration(label: Text('title')),

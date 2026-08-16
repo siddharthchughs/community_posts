@@ -21,17 +21,14 @@ class CreatePostParams extends Equatable {
   List<Object?> get props => [postId, title, content, imageUrl];
 }
 
-class CreatePostUseCase
-    implements Usecase<PostDisplayEntity, CreatePostParams> {
+class CreatePostUseCase implements Usecase<PostDisplay, CreatePostParams> {
   CreatePostUseCase({required PostsRepository postReository})
     : _postsRepository = postReository;
 
   final PostsRepository _postsRepository;
 
   @override
-  Future<Either<Failure, PostDisplayEntity>> call(
-    CreatePostParams params,
-  ) async {
+  Future<Either<Failure, PostDisplay>> call(CreatePostParams params) async {
     return await _postsRepository.createPost(
       postId: params.postId,
       title: params.title,

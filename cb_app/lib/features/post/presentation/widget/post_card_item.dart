@@ -15,7 +15,7 @@ class PostCardItem extends StatelessWidget {
     required this.onToogleLike,
   });
 
-  final PostDisplayEntity postDisplayEntity;
+  final PostDisplay postDisplayEntity;
   final VoidCallback? onToogleLike;
 
   @override

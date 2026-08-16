@@ -12,7 +12,7 @@ class PostRepsitoryImpl implements PostsRepository {
     : _postRemoteDataSource = postRemoteDataSource;
 
   @override
-  Future<Either<Failure, List<PostDisplayEntity>>> getPosts({
+  Future<Either<Failure, List<PostDisplay>>> getPosts({
     required int offset,
     required int limit,
   }) async {
@@ -40,7 +40,7 @@ class PostRepsitoryImpl implements PostsRepository {
   }
 
   @override
-  Future<Either<Failure, PostDisplayEntity>> createPost({
+  Future<Either<Failure, PostDisplay>> createPost({
     String? postId,
     required String title,
     required String content,
@@ -122,7 +122,7 @@ class PostRepsitoryImpl implements PostsRepository {
   }
 
   @override
-  Future<Either<Failure, PostDisplayEntity>> getPostDetail({
+  Future<Either<Failure, PostDisplay>> getPostDetail({
     required String postId,
   }) async {
     try {

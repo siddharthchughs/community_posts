@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-class PostDisplayEntity extends Equatable {
-  const PostDisplayEntity({
+@immutable
+class PostDisplay extends Equatable {
+  const PostDisplay({
     required this.postId,
     required this.title,
     required this.content,
@@ -51,7 +52,7 @@ class PostDisplayEntity extends Equatable {
     ];
   }
 
-  PostDisplayEntity copyWith({
+  PostDisplay copyWith({
     String? postId,
     String? title,
     String? content,
@@ -66,7 +67,7 @@ class PostDisplayEntity extends Equatable {
     int? commentCount,
     bool? currentUserLiked,
   }) {
-    return PostDisplayEntity(
+    return PostDisplay(
       postId: postId ?? this.postId,
       title: title ?? this.title,
       content: content ?? this.content,

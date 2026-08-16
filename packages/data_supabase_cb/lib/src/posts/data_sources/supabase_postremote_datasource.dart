@@ -5,6 +5,7 @@ import 'package:core/errors.dart';
 import 'package:domain/posts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/models.dart';
 import 'post_remote_data_source.dart';
 
@@ -173,5 +174,72 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
   Future<void> deletePost({required String postId}) {
     // TODO: implement deletePost
     throw UnimplementedError();
+  }
+
+  @override
+  Future<List<PostCommentModel>> getPostComments({
+    required String postId,
+    required int offset,
+    required int limit,
+  }) async {
+    try {
+      if (_supabaseClient.auth.currentUser == null) {
+        throw const AuthenticationException(
+          message: 'USER IS not authorized to get post comments!',
+        );
+      }
+      final loadPageOffset = offset + limit - 1;
+      final commentsMap = await _supabaseClient
+          .from(Views.commentDisplayViews)
+          .select()
+          .eq('post_id', postId)
+          .range(offset, loadPageOffset);
+      return commentsMap
+          .map((mapComments) => PostCommentModel.fromJson(mapComments))
+          .toList();
+    } on AuthenticationException {
+      rethrow;
+    } on PostgrestException catch (e) {
+      if (e.code == PostgresErrors.insufficientPrivilege) {
+        throw PermissionException(message: e.message);
+      }
+      throw DatabaseException(message: e.message);
+    } on SocketException {
+      throw const NetworkException();
+    } catch (e) {
+      throw UnknownException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<PostsDisplayModel> getPostDetail({required String postId}) async {
+    try {
+      if (_supabaseClient.auth.currentUser == null) {
+        throw const AuthenticationException(
+          message: 'USER IS not authorized to get post details',
+        );
+      }
+      final postDisplayModelView = await _supabaseClient
+          .from(Views.postDisplayViews)
+          .select()
+          .eq('post_id', postId)
+          .single();
+
+      return PostsDisplayModel.fromJson(postDisplayModelView);
+    } on AuthenticationException {
+      rethrow;
+    } on PostgrestException catch (e) {
+      if (e.code == PostgresErrors.insufficientPrivilege) {
+        throw PermissionException(message: e.message);
+      }
+      if (e.code == PostgresErrors.moreThanOneorMoreItemsreturned) {
+        throw NotFoundException(message: e.message);
+      }
+      throw DatabaseException(message: e.message);
+    } on SocketException {
+      throw const NetworkException();
+    } catch (e) {
+      throw UnknownException(message: e.toString());
+    }
   }
 }

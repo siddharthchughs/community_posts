@@ -2,6 +2,8 @@ import 'package:data_supabase/auth.dart';
 import 'package:data_supabase/posts.dart';
 import 'package:domain/auth.dart';
 import 'package:domain/posts.dart';
+import 'package:domain/src/posts/usecases/get_post_comments_usecase.dart';
+import 'package:domain/src/posts/usecases/get_post_detail_usecase.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -40,11 +42,17 @@ abstract class RegisterModule {
   UserLogout get logoutUsecase;
 
   @injectable
-  GetPostsUsecases get getPostsUsecases;
+  GetPostsUseCase get getPostsUsecases;
 
   @injectable
   CreatePostUseCase get createPostUsecases;
 
   @injectable
   UploadPostImageUseCase get uploadImageUsecases;
+
+  @injectable
+  GetPostDetailUseCase get getPostDetailUseCase;
+
+  @injectable
+  GetPostCommentsUseCase get getPostCommentsUseCase;
 }

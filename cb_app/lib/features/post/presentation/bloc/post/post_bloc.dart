@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:core/errors.dart';
 import 'package:domain/posts.dart';
+import 'package:domain/src/posts/usecases/usecases.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,12 +13,12 @@ import '../../../../../core/bus/global_event_bus.dart';
 part 'post_event.dart';
 part 'post_state.dart';
 
-const _page_size = 8;
+const _pageSize = 8;
 
 @injectable
 class PostBloc extends Bloc<PostEvent, PostListState> {
   PostBloc({
-    required GetPostsUsecases getPostUseCase,
+    required GetPostsUseCase getPostUseCase,
     required GlobalEventBus globalEventBus,
   }) : _getPostsUsecases = getPostUseCase,
        _globalEventBus = globalEventBus,
@@ -33,7 +34,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     });
   }
 
-  final GetPostsUsecases _getPostsUsecases;
+  final GetPostsUseCase _getPostsUsecases;
   final GlobalEventBus _globalEventBus;
   StreamSubscription<GlobalEvent>? _globalEventSubscription;
 
@@ -50,7 +51,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     if (_isBusy) return;
     emit(state.copyWith(state: PostUIState.loading));
     final response = await _getPostsUsecases(
-      const GetPostsParams(offset: 0, limit: _page_size),
+      const GetPostsParams(offset: 0, limit: _pageSize),
     );
     response.fold(
       (failure) {
@@ -64,7 +65,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
           state.copyWith(
             state: PostUIState.loaded,
             posts: posts,
-            isLimitMax: posts.length < _page_size,
+            isLimitMax: posts.length < _pageSize,
           ),
         );
       },
@@ -81,7 +82,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     await Future.delayed(const Duration(seconds: 2));
 
     final resultMorePosts = await _getPostsUsecases(
-      GetPostsParams(offset: state.posts.length, limit: _page_size),
+      GetPostsParams(offset: state.posts.length, limit: _pageSize),
     );
 
     resultMorePosts.fold(
@@ -96,7 +97,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
           state.copyWith(
             state: PostUIState.loaded,
             posts: [...state.posts, ...newPosts],
-            isLimitMax: newPosts.length < _page_size,
+            isLimitMax: newPosts.length < _pageSize,
           ),
         );
       },
@@ -110,7 +111,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     emit(state.copyWith(state: PostUIState.refresh));
 
     final result = await _getPostsUsecases(
-      const GetPostsParams(offset: 0, limit: _page_size),
+      const GetPostsParams(offset: 0, limit: _pageSize),
     );
 
     result.fold(
@@ -120,11 +121,11 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
           transientFailure: () => failure,
         ),
       ),
-      (postsRefreshed) => emit(
+      (newPosts) => emit(
         state.copyWith(
           state: PostUIState.loaded,
-          posts: postsRefreshed,
-          isLimitMax: postsRefreshed.length < _page_size,
+          posts: newPosts,
+          isLimitMax: newPosts.length < _pageSize,
         ),
       ),
     );
