@@ -3,11 +3,15 @@ import 'package:core/utils.dart';
 import 'package:domain/posts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/config/router/router_constants.dart';
 import '../../../../core/di/di.dart';
+import '../../../auth/presentation/blocs/authentication/authentication_bloc.dart';
 import '../bloc/post_comments/post_comments_bloc.dart';
 import '../bloc/post_detail/post_detail_bloc.dart';
+import '../widget/comment_list_view.dart';
 
 class PostDetailPage extends StatelessWidget {
   const PostDetailPage({super.key, required this.postId});
@@ -123,7 +127,14 @@ class _PostDetailViewState extends State<PostDetailView> {
         child: CustomScrollView(
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [SliverToBoxAdapter(child: _buildPostDetail(context, post))],
+          slivers: [
+            SliverToBoxAdapter(child: _buildPostDetail(context, post)),
+            //            SliverToBoxAdapter(child: const Divider()),
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: CommentListView(),
+            ),
+          ],
         ),
       ),
     );
@@ -136,23 +147,38 @@ class _PostDetailViewState extends State<PostDetailView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: Colors.amberAccent,
-            child: post.authorAvatarUrl == null
-                ? const Icon(Icons.person_2, size: 24, color: Colors.blue)
-                : ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: post.authorAvatarUrl!,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(strokeWidth: 2),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error_outline, size: 24),
-                      fit: BoxFit.cover,
-                      width: 48,
-                      height: 48,
+          InkWell(
+            onTap: () {
+              final currentUserId = context
+                  .read<AuthenticationBloc>()
+                  .state
+                  .user
+                  ?.id;
+              if (currentUserId != post.authorID) {
+                context.pushNamed(
+                  RouteNames.userDetail,
+                  pathParameters: {'userId': post.authorID},
+                );
+              }
+            },
+            child: CircleAvatar(
+              radius: 24,
+              backgroundColor: Colors.amberAccent,
+              child: post.authorAvatarUrl == null
+                  ? const Icon(Icons.person_2, size: 24, color: Colors.blue)
+                  : ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: post.authorAvatarUrl!,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(strokeWidth: 2),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error_outline, size: 24),
+                        fit: BoxFit.cover,
+                        width: 48,
+                        height: 48,
+                      ),
                     ),
-                  ),
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -160,6 +186,46 @@ class _PostDetailViewState extends State<PostDetailView> {
             children: [
               Text(post.authorName),
               Text(DateFormat('yyyy-MM-dd HH:mm').format(post.postCreatedAt)),
+              const SizedBox(height: 24),
+              if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: post.imageUrl!,
+                    placeholder: (context, url) => AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Container(color: Colors.blueAccent.shade400),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.image_not_supported_outlined),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              const SizedBox(height: 24),
+              Text(post.title),
+              const SizedBox(height: 24),
+              Text(post.content),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      post.currentUserLiked
+                          ? Icons.thumb_up
+                          : Icons.thumb_up_alt_outlined,
+                      color: post.currentUserLiked
+                          ? Theme.of(context).primaryColor
+                          : null,
+                    ),
+                  ),
+                  Text(post.likeCount.toString()),
+                  const SizedBox(height: 24),
+                  const Icon(Icons.mode_comment_outlined, size: 24),
+                  const SizedBox(height: 24),
+                  Text(post.commentCount.toString()),
+                ],
+              ),
             ],
           ),
         ],
