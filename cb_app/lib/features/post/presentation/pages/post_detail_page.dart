@@ -129,9 +129,8 @@ class _PostDetailViewState extends State<PostDetailView> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(child: _buildPostDetail(context, post)),
-            //            SliverToBoxAdapter(child: const Divider()),
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
+            const SliverPadding(
+              padding: EdgeInsets.all(16),
               sliver: CommentListView(),
             ),
           ],
@@ -142,7 +141,7 @@ class _PostDetailViewState extends State<PostDetailView> {
 
   Widget _buildPostDetail(BuildContext context, PostDisplay post) {
     return Padding(
-      padding: EdgeInsetsGeometry.all(12),
+      padding: const EdgeInsetsGeometry.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -161,36 +160,61 @@ class _PostDetailViewState extends State<PostDetailView> {
                 );
               }
             },
-            child: CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.amberAccent,
-              child: post.authorAvatarUrl == null
-                  ? const Icon(Icons.person_2, size: 24, color: Colors.blue)
-                  : ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: post.authorAvatarUrl!,
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(strokeWidth: 2),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error_outline, size: 24),
-                        fit: BoxFit.cover,
-                        width: 48,
-                        height: 48,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 38,
+                  backgroundColor: Colors.amberAccent,
+                  child: post.authorAvatarUrl == null
+                      ? const Icon(Icons.person_2, size: 24, color: Colors.blue)
+                      : ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: post.authorAvatarUrl!,
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(strokeWidth: 2),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error_outline, size: 24),
+                            fit: BoxFit.cover,
+                            width: 48,
+                            height: 48,
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post.authorName,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
+                      Text(
+                        DateFormat(
+                          'yyyy-MM-dd HH:mm',
+                        ).format(post.postCreatedAt),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(post.authorName),
-              Text(DateFormat('yyyy-MM-dd HH:mm').format(post.postCreatedAt)),
               const SizedBox(height: 24),
               if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: CachedNetworkImage(
+                    width: double.infinity,
+                    height: 250,
                     imageUrl: post.imageUrl!,
                     placeholder: (context, url) => AspectRatio(
                       aspectRatio: 16 / 9,
