@@ -16,7 +16,7 @@ class PostCardItem extends StatelessWidget {
   });
 
   final PostDisplay postDisplayEntity;
-  final VoidCallback? onToogleLike;
+  final Function() onToogleLike;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +25,11 @@ class PostCardItem extends StatelessWidget {
     );
     return InkWell(
       onTap: () {
+        print('Post Card Item :: ${postDisplayEntity.postId}');
         context.pushNamed(
           RouteNames.postDetail,
           pathParameters: {'postId': postDisplayEntity.postId},
+          extra: postDisplayEntity,
         );
       },
       child: Card(
@@ -37,7 +39,8 @@ class PostCardItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InkWell(
                 onTap: () {
@@ -65,11 +68,12 @@ class PostCardItem extends StatelessWidget {
                               ),
                             ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(postDisplayEntity.authorName),
+                        const SizedBox(height: 8),
                         Text(
                           DateFormat(
                             'yyyy-MM-dd HH:mm',
@@ -97,33 +101,40 @@ class PostCardItem extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
+                const SizedBox(height: 10),
               ],
               Text(
                 postDisplayEntity.content,
                 maxLines: 5,
                 overflow: TextOverflow.ellipsis,
               ),
+              const Divider(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: onToogleLike,
                     icon: Icon(
                       postDisplayEntity.currentUserLiked
                           ? Icons.thumb_up
-                          : Icons.thumb_down_alt_outlined,
+                          : Icons.thumb_up_alt_outlined,
+                      size: 28,
+                      color: postDisplayEntity.currentUserLiked
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey.shade800,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(postDisplayEntity.likeCount.toString()),
+                  Text(postDisplayEntity.likesCount.toString()),
                   const SizedBox(width: 16),
                   const Icon(
                     Icons.comment_outlined,
-                    size: 18,
-                    color: Colors.white,
+                    size: 28,
+                    color: Colors.blueGrey,
                   ),
                   const SizedBox(width: 12),
                   Text(postDisplayEntity.commentCount.toString()),
+                  const SizedBox(width: 8),
                 ],
               ),
             ],

@@ -14,16 +14,17 @@ import '../bloc/post_detail/post_detail_bloc.dart';
 import '../widget/comment_list_view.dart';
 
 class PostDetailPage extends StatelessWidget {
-  const PostDetailPage({super.key, required this.postId});
+  const PostDetailPage({super.key, required this.postId, this.initialPost});
   final String postId;
+  final PostDisplay? initialPost;
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-              getIt<PostDetailBloc>()..add(PostDetailFetched(postId: postId)),
+          create: (context) => getIt<PostDetailBloc>()
+            ..add(PostDetailFetched(postId: postId, initialPost: initialPost)),
         ),
         BlocProvider(
           create: (context) =>
@@ -77,7 +78,7 @@ class _PostDetailViewState extends State<PostDetailView> {
           case PostDetailStatus.initial || PostDetailStatus.loading:
             return Scaffold(
               appBar: AppBar(title: const Text('Detail')),
-              body: Center(child: Text('Post Detail Page View')),
+              body: const Center(child: CircularProgressIndicator.adaptive()),
             );
           case PostDetailStatus.failing:
             return Scaffold(
@@ -88,19 +89,18 @@ class _PostDetailViewState extends State<PostDetailView> {
                 ),
               ),
             );
-          // TODO: Handle this case.
           case _:
             final post = state.post!;
             return Scaffold(
-              appBar: AppBar(title: Text('Detail')),
-              body: _buildContext(context, post),
+              appBar: AppBar(title: Text(post.title)),
+              body: _buildContent(context, post),
             );
         }
       },
     );
   }
 
-  Widget _buildContext(BuildContext context, PostDisplay post) {
+  Widget _buildContent(BuildContext context, PostDisplay post) {
     return BlocListener<PostCommentsBloc, PostCommentsState>(
       listenWhen: (previous, current) {
         final prevTransientFailure = previous.transientFailure;
@@ -144,8 +144,8 @@ class _PostDetailViewState extends State<PostDetailView> {
       padding: const EdgeInsetsGeometry.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(width: 16),
           InkWell(
             onTap: () {
               final currentUserId = context
@@ -155,7 +155,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                   ?.id;
               if (currentUserId != post.authorID) {
                 context.pushNamed(
-                  RouteNames.userDetail,
+                  RouteNames.postDetail,
                   pathParameters: {'userId': post.authorID},
                 );
               }
@@ -205,52 +205,61 @@ class _PostDetailViewState extends State<PostDetailView> {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    width: double.infinity,
-                    height: 250,
-                    imageUrl: post.imageUrl!,
-                    placeholder: (context, url) => AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Container(color: Colors.blueAccent.shade400),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      width: double.infinity,
+                      height: 250,
+                      imageUrl: post.imageUrl!,
+                      placeholder: (context, url) => AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Container(color: Colors.blueAccent.shade400),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.image_not_supported_outlined),
+                      fit: BoxFit.cover,
                     ),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.image_not_supported_outlined),
-                    fit: BoxFit.cover,
                   ),
+                const SizedBox(height: 24),
+                Text(post.title),
+                const SizedBox(height: 24),
+                Text(post.content),
+                const SizedBox(height: 24),
+                Text(post.likesCount.toString()),
+
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        context.read<PostDetailBloc>().add(
+                          const PostDetailLikeToggled(),
+                        );
+                      },
+                      icon: Icon(
+                        post.currentUserLiked
+                            ? Icons.thumb_up
+                            : Icons.thumb_up_alt_outlined,
+                        color: post.currentUserLiked
+                            ? Theme.of(context).primaryColor
+                            : null,
+                      ),
+                    ),
+                    Text(post.likesCount.toString()),
+                    const SizedBox(width: 16),
+                    const Icon(Icons.mode_comment_outlined, size: 24),
+                    const SizedBox(width: 16),
+                    Text(post.commentCount.toString()),
+                  ],
                 ),
-              const SizedBox(height: 24),
-              Text(post.title),
-              const SizedBox(height: 24),
-              Text(post.content),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      post.currentUserLiked
-                          ? Icons.thumb_up
-                          : Icons.thumb_up_alt_outlined,
-                      color: post.currentUserLiked
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                  ),
-                  Text(post.likeCount.toString()),
-                  const SizedBox(height: 24),
-                  const Icon(Icons.mode_comment_outlined, size: 24),
-                  const SizedBox(height: 24),
-                  Text(post.commentCount.toString()),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

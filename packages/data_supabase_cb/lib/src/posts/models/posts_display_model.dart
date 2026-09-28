@@ -16,14 +16,12 @@ class PostsDisplayModel extends PostDisplay {
     required super.authorName,
     super.authorAvatarUrl,
     required super.authorRole,
-    required super.likeCount,
+    required super.likesCount,
     required super.commentCount,
     required super.currentUserLiked,
   });
 
   static int _safeIntFromJson(Object? value) {
-    if (value == null) return 0;
-    if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value.toString()) ?? 0;
   }
@@ -71,11 +69,11 @@ class PostsDisplayModel extends PostDisplay {
   @override
   String get authorRole;
 
-  @JsonKey(name: 'like_count', fromJson: PostsDisplayModel._safeIntFromJson)
+  @JsonKey(name: 'likes_count')
   @override
-  int get likeCount;
+  int get likesCount;
 
-  @JsonKey(name: 'comments_count', fromJson: PostsDisplayModel._safeIntFromJson)
+  @JsonKey(name: 'comments_count')
   @override
   int get commentCount;
 

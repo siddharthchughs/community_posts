@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:core/errors.dart';
 import 'package:domain/posts.dart';
-import 'package:domain/src/posts/usecases/usecases.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 
@@ -20,14 +19,17 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
   PostBloc({
     required GetPostsUseCase getPostUseCase,
     required GlobalEventBus globalEventBus,
+    required ToggleLikeUseCase toggleLikeUseCase,
   }) : _getPostsUsecases = getPostUseCase,
        _globalEventBus = globalEventBus,
+       _toggleLikeUseCase = toggleLikeUseCase,
        super(const PostListState()) {
     on<PostsFetched>(_getPostListLoaded);
     on<PostMorePostsFetched>(_morePostFetched);
     on<PostsRefreshed>(_newPostListUpdted);
+    on<PostLikeToggle>(_onPostLikeToggle);
     on<PostsTransientFailureConsumed>(_postListTransientFailureConsumed);
-    on<_GlobalEventReceived>(_onGlobalEventReceived);
+    on<_GlobalEventReceived>(_onEventTypeReceived);
 
     _globalEventSubscription = _globalEventBus.stream.listen((event) {
       add(_GlobalEventReceived(event: event));
@@ -36,6 +38,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
 
   final GetPostsUseCase _getPostsUsecases;
   final GlobalEventBus _globalEventBus;
+  final ToggleLikeUseCase _toggleLikeUseCase;
   StreamSubscription<GlobalEvent>? _globalEventSubscription;
 
   bool get _isBusy =>
@@ -131,6 +134,56 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     );
   }
 
+  Future<void> _onPostLikeToggle(
+    PostLikeToggle event,
+    Emitter<PostListState> emit,
+  ) async {
+    if (_isBusy) return;
+    final originalList = state.posts;
+    final orginalPost = event.postDisplay;
+    final originalIndex = originalList.indexWhere((postUpdate) {
+      return postUpdate.postId == orginalPost.postId;
+    });
+    if (originalIndex == -1) return;
+
+    final updatePost = orginalPost.copyWith(
+      currentUserLiked: !orginalPost.currentUserLiked,
+      likesCount: orginalPost.currentUserLiked
+          ? orginalPost.likesCount - 1
+          : orginalPost.likesCount + 1,
+    );
+
+    final updateList = List<PostDisplay>.from(originalList);
+    updateList[originalIndex] = updatePost;
+    emit(state.copyWith(posts: updateList, transientFailure: () => null));
+
+    final result = await _toggleLikeUseCase(orginalPost.postId);
+    result.fold(
+      (failure) {
+        state.copyWith(posts: originalList, transientFailure: () => failure);
+      },
+      (likeResult) {
+        final updatedPost = orginalPost.copyWith(
+          currentUserLiked: likeResult.isLiked,
+          likesCount: likeResult.likesCount,
+        );
+        final updatedPostList = List<PostDisplay>.from(state.posts);
+        final updatedElementIndex = updatedPostList.indexWhere(
+          (postUpdated) => postUpdated.postId == updatedPost.postId,
+        );
+
+        if (updatedElementIndex != -1) {
+          updatedPostList[updatedElementIndex] = updatedPost;
+
+          _globalEventBus.add(PostUpdatedDispatched(posts: updatedPost));
+          emit(state.copyWith(posts: updatedPostList));
+        } else {
+          emit(state);
+        }
+      },
+    );
+  }
+
   void _postListTransientFailureConsumed(
     PostsTransientFailureConsumed event,
     Emitter<PostListState> emit,
@@ -138,7 +191,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     emit(state.copyWith(transientFailure: () => null));
   }
 
-  void _onGlobalEventReceived(
+  void _onEventTypeReceived(
     _GlobalEventReceived event,
     Emitter<PostListState> emit,
   ) {
@@ -147,6 +200,13 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
       case PostCreatedDispacted(posts: final newPost):
         final currentPosts = state.posts;
         emit(state.copyWith(posts: [newPost, ...currentPosts]));
+
+      case PostUpdatedDispatched(posts: final updatedPost):
+        final currentPost = state.posts;
+        final newPosts = currentPost.map((post) {
+          return post.postId == updatedPost.postId ? updatedPost : post;
+        }).toList();
+        emit(state.copyWith(posts: newPosts));
     }
   }
 

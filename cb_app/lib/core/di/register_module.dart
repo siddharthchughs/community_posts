@@ -2,8 +2,6 @@ import 'package:data_supabase/auth.dart';
 import 'package:data_supabase/posts.dart';
 import 'package:domain/auth.dart';
 import 'package:domain/posts.dart';
-import 'package:domain/src/posts/usecases/get_post_comments_usecase.dart';
-import 'package:domain/src/posts/usecases/get_post_detail_usecase.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -55,4 +53,16 @@ abstract class RegisterModule {
 
   @injectable
   GetPostCommentsUseCase get getPostCommentsUseCase;
+
+  @injectable
+  ToggleLikeUseCase get toggleLikeUseCase;
+
+  @injectable
+  CreateCommentUseCase get createCommentUseCase;
+
+  @injectable
+  DeleteCommentUseCase get deleteCommentUseCase;
+
+  @injectable
+  UpdateCommentUseCase get updateCommentUseCase;
 }

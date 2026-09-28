@@ -18,8 +18,8 @@ PostsDisplayModel _$PostsDisplayModelFromJson(Map<String, dynamic> json) =>
       authorName: json['author_username'] as String,
       authorAvatarUrl: json['author_avatar_url'] as String?,
       authorRole: json['author_role'] as String,
-      likeCount: PostsDisplayModel._safeIntFromJson(json['like_count']),
-      commentCount: PostsDisplayModel._safeIntFromJson(json['comments_count']),
+      likesCount: (json['likes_count'] as num).toInt(),
+      commentCount: (json['comments_count'] as num).toInt(),
       currentUserLiked: PostsDisplayModel._safeBoolFromJson(
         json['current_user_like'],
       ),

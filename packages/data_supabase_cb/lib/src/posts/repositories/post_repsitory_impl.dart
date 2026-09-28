@@ -53,7 +53,6 @@ class PostRepsitoryImpl implements PostsRepository {
         content: content,
         imageUrl: imageUrl,
       );
-      print('Posts ${responsePost} ');
       return Right(responsePost);
     } on AuthenticationException catch (e) {
       return Left(AuthenticationFailure(message: e.message));
@@ -128,6 +127,106 @@ class PostRepsitoryImpl implements PostsRepository {
     try {
       final post = await _postRemoteDataSource.getPostDetail(postId: postId);
       return Right(post);
+      print('Post Detail :: ${post.likesCount.toString()}');
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, LikeResult>> toggleLikePost({
+    required String postId,
+  }) async {
+    try {
+      final likedResultEmitted = await _postRemoteDataSource.toggleLikePost(
+        postId: postId,
+      );
+      print(
+        'Post Detail Result :: ${likedResultEmitted.likesCount.toString()}',
+      );
+      return Right(likedResultEmitted);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: ' Post Liked error: ${e.message}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CommentDisplay>> createComment({
+    required String postyId,
+    required String newContent,
+  }) async {
+    try {
+      final newComment = await _postRemoteDataSource.onCreateComment(
+        postId: postyId,
+        content: newContent,
+      );
+      return Right(newComment);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteComment({
+    required String commentId,
+  }) async {
+    try {
+      await _postRemoteDataSource.deleteComment(commentId: commentId);
+      return const Right(null);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: ' Post Liked error: ${e.message}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CommentDisplay>> updateComment({
+    required String commentId,
+    required String newContent,
+  }) async {
+    try {
+      final commentUpdatedResponse = await _postRemoteDataSource
+          .onUpdateComment(commentId: commentId, newContentUpdate: newContent);
+      return Right(commentUpdatedResponse);
     } on AuthenticationException catch (e) {
       return Left(AuthenticationFailure(message: e.message));
     } on PermissionException catch (e) {

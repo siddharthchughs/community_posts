@@ -3,3 +3,7 @@ export 'get_post_comments_usecase.dart';
 export 'get_post_detail_usecase.dart';
 export 'upload_post_image_usecases.dart';
 export 'create_post_usecases.dart';
+export 'toggle_like_usecase.dart';
+export 'create_comment_usecase.dart';
+export 'update_comment_usecase.dart';
+export 'delete_comment_usecase.dart';

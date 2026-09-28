@@ -63,13 +63,13 @@ class _PostPageView extends State<PostPageView> {
           }
         },
         builder: (context, state) {
-          print(state.posts.isEmpty);
-          print(state.failure);
           return switch (state.state) {
             PostUIState.initial => Placeholder(),
+
             PostUIState.loading => const Center(
               child: CircularProgressIndicator(),
             ),
+
             PostUIState.failure => Center(
               child: Padding(
                 padding: const EdgeInsetsGeometry.all(8.0),
@@ -91,6 +91,7 @@ class _PostPageView extends State<PostPageView> {
                 ),
               ),
             ),
+
             PostUIState.loaded when state.posts.isEmpty => RefreshIndicator(
               onRefresh: () async {
                 context.read<PostBloc>().add(PostsRefreshed());
@@ -98,7 +99,7 @@ class _PostPageView extends State<PostPageView> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 15,
                     ),
@@ -114,6 +115,7 @@ class _PostPageView extends State<PostPageView> {
                 },
               ),
             ),
+
             _ => RefreshIndicator(
               onRefresh: () async {
                 context.read<PostBloc>().add(PostsRefreshed());
@@ -133,7 +135,11 @@ class _PostPageView extends State<PostPageView> {
                   final post = state.posts[index];
                   return PostCardItem(
                     postDisplayEntity: post,
-                    onToogleLike: () {},
+                    onToogleLike: () {
+                      context.read<PostBloc>().add(
+                        PostLikeToggle(postDisplay: post),
+                      );
+                    },
                   );
                 },
               ),

@@ -9,7 +9,7 @@ import '../dto/image_upload_result.dart';
 import '../posts.dart';
 
 class UploadPostImageParams extends Equatable {
-  UploadPostImageParams({required this.image, this.postId});
+  const UploadPostImageParams({required this.image, this.postId});
   final File image;
   final String? postId;
 

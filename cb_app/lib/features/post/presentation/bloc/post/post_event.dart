@@ -15,11 +15,18 @@ final class PostsRefreshed extends PostEvent {}
 
 final class PostsTransientFailureConsumed extends PostEvent {}
 
+final class PostLikeToggle extends PostEvent {
+  const PostLikeToggle({required this.postDisplay});
+  final PostDisplay postDisplay;
+
+  @override
+  List<Object?> get props => [postDisplay];
+}
+
 final class _GlobalEventReceived extends PostEvent {
   const _GlobalEventReceived({required this.event});
 
   final GlobalEvent event;
-
   @override
   List<Object?> get props => [event];
 }

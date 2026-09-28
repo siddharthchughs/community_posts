@@ -1,4 +1,5 @@
 import 'package:community_board/core/config/router/router_constants.dart';
+import 'package:domain/posts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../features/auth/presentation/blocs/authentication/authentication_bloc.dart';
@@ -76,7 +77,10 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         name: RouteNames.postDetail,
         builder: (context, state) {
           final postId = state.pathParameters['postId'];
-          return PostDetailPage(postId: postId!);
+          return PostDetailPage(
+            postId: postId!,
+            initialPost: state.extra as PostDisplay?,
+          );
         },
         routes: [
           GoRoute(

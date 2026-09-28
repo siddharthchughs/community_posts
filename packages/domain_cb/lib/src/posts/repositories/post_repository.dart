@@ -30,4 +30,18 @@ abstract interface class PostsRepository {
     required int offset,
     required int limit,
   });
+
+  Future<Either<Failure, LikeResult>> toggleLikePost({required String postId});
+
+  Future<Either<Failure, CommentDisplay>> createComment({
+    required String postId,
+    required String newContent,
+  });
+
+  Future<Either<Failure, void>> deleteComment({required String commentId});
+
+  Future<Either<Failure, CommentDisplay>> updateComment({
+    required String commentId,
+    required String newContent,
+  });
 }

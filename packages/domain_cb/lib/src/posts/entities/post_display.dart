@@ -14,7 +14,7 @@ class PostDisplay extends Equatable {
     required this.authorName,
     this.authorAvatarUrl,
     required this.authorRole,
-    required this.likeCount,
+    required this.likesCount,
     required this.commentCount,
     required this.currentUserLiked,
   });
@@ -29,7 +29,7 @@ class PostDisplay extends Equatable {
   final String authorName;
   final String? authorAvatarUrl;
   final String authorRole;
-  final int likeCount;
+  final int likesCount;
   final int commentCount;
   final bool currentUserLiked;
 
@@ -46,7 +46,7 @@ class PostDisplay extends Equatable {
       authorName,
       authorAvatarUrl,
       authorRole,
-      likeCount,
+      likesCount,
       commentCount,
       currentUserLiked,
     ];
@@ -63,7 +63,7 @@ class PostDisplay extends Equatable {
     String? authorName,
     ValueGetter<String?>? authorAvatarUrl,
     String? authorRole,
-    int? likeCount,
+    int? likesCount,
     int? commentCount,
     bool? currentUserLiked,
   }) {
@@ -80,7 +80,7 @@ class PostDisplay extends Equatable {
           ? authorAvatarUrl()
           : this.authorAvatarUrl,
       authorRole: authorRole ?? this.authorRole,
-      likeCount: likeCount ?? this.likeCount,
+      likesCount: likesCount ?? this.likesCount,
       commentCount: commentCount ?? this.commentCount,
       currentUserLiked: currentUserLiked ?? this.currentUserLiked,
     );
