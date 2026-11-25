@@ -30,6 +30,7 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     on<PostLikeToggle>(_onPostLikeToggle);
     on<PostsTransientFailureConsumed>(_postListTransientFailureConsumed);
     on<_GlobalEventReceived>(_onEventTypeReceived);
+    on<_PostListUpdatedEventRequest>(_onPostListUpdateRequest);
 
     _globalEventSubscription = _globalEventBus.stream.listen((event) {
       add(_GlobalEventReceived(event: event));
@@ -184,6 +185,37 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
     );
   }
 
+  Future<void> _onPostListUpdateRequest(
+    _PostListUpdatedEventRequest event,
+    Emitter<PostListState> emit,
+  ) async {
+    if (_isBusy || state.isLimitMax) return;
+    emit(state.copyWith(state: PostUIState.loadingmore));
+    final result = await _getPostsUsecases(
+      GetPostsParams(offset: state.posts.length, limit: 1),
+    );
+    result.fold(
+      (failure) {
+        state.copyWith(
+          state: PostUIState.loaded,
+          transientFailure: () => failure,
+        );
+      },
+      (newPosts) {
+        if (newPosts.isNotEmpty) {
+          emit(
+            state.copyWith(
+              state: PostUIState.loaded,
+              posts: [...newPosts, ...state.posts],
+            ),
+          );
+        } else {
+          emit(state.copyWith(state: PostUIState.loaded, isLimitMax: true));
+        }
+      },
+    );
+  }
+
   void _postListTransientFailureConsumed(
     PostsTransientFailureConsumed event,
     Emitter<PostListState> emit,
@@ -207,6 +239,14 @@ class PostBloc extends Bloc<PostEvent, PostListState> {
           return post.postId == updatedPost.postId ? updatedPost : post;
         }).toList();
         emit(state.copyWith(posts: newPosts));
+
+      case PostDeletedDispatched(postId: final deletedPostId):
+        final currentPost = state.posts;
+        final newPost = currentPost
+            .where((post) => post.postId != deletedPostId)
+            .toList();
+        emit(state.copyWith(posts: newPost));
+        add(_PostListUpdatedEventRequest());
     }
   }
 

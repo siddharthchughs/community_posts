@@ -16,6 +16,12 @@ final class PostDetailFetched extends PostDetailEvent {
   List<Object?> get props => [postId, initialPost];
 }
 
+final class PostDeletedEvent extends PostDetailEvent {
+  const PostDeletedEvent();
+}
+
+final class PostDetailTransientFailureConsumed extends PostDeletedEvent {}
+
 final class PostDetailLikeToggled extends PostDetailEvent {
   const PostDetailLikeToggled();
 }
@@ -23,4 +29,7 @@ final class PostDetailLikeToggled extends PostDetailEvent {
 final class _PostUpdatedFromBus extends PostDetailEvent {
   const _PostUpdatedFromBus({required this.postDisplay});
   final PostDisplay postDisplay;
+
+  @override
+  List<Object?> get props => [postDisplay];
 }

@@ -23,6 +23,8 @@ final class PostLikeToggle extends PostEvent {
   List<Object?> get props => [postDisplay];
 }
 
+final class _PostListUpdatedEventRequest extends PostEvent {}
+
 final class _GlobalEventReceived extends PostEvent {
   const _GlobalEventReceived({required this.event});
 

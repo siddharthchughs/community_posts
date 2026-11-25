@@ -8,14 +8,14 @@ class PostDetailState extends Equatable {
     this.post,
     this.failure,
     this.transientFailure,
-    this.isPostDeleted = false,
+    this.postDeletionSuccess = false,
   });
 
   final PostDetailStatus status;
   final PostDisplay? post;
   final Failure? failure;
   final Failure? transientFailure;
-  final bool isPostDeleted;
+  final bool postDeletionSuccess;
 
   @override
   List<Object?> get props => [status, post, failure, transientFailure];
@@ -25,7 +25,7 @@ class PostDetailState extends Equatable {
     PostDisplay? Function()? post,
     Failure? Function()? failure,
     Failure? Function()? transientFailure,
-    bool? isPostDeleted,
+    bool? postDeletionSuccess,
   }) {
     return PostDetailState(
       status: status ?? this.status,
@@ -34,7 +34,7 @@ class PostDetailState extends Equatable {
       transientFailure: transientFailure != null
           ? transientFailure()
           : this.transientFailure,
-      isPostDeleted: isPostDeleted ?? this.isPostDeleted,
+      postDeletionSuccess: postDeletionSuccess ?? this.postDeletionSuccess,
     );
   }
 }

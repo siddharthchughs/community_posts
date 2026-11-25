@@ -21,3 +21,36 @@ final class PostFormSubmittedEvent extends PostFormEvent {
   @override
   List<Object?> get props => [title, content, imageFile];
 }
+
+final class PostFormPrefilled extends PostFormEvent {
+  const PostFormPrefilled({required this.postId});
+  final String postId;
+
+  @override
+  List<Object?> get props => [postId];
+}
+
+final class PostEdited extends PostFormEvent {
+  const PostEdited({
+    required this.originalPost,
+    required this.title,
+    required this.newContent,
+    required this.newImageFile,
+    required this.imageIsRemoved,
+  });
+
+  final PostDisplay originalPost;
+  final String title;
+  final String newContent;
+  final File? newImageFile;
+  final bool imageIsRemoved;
+
+  @override
+  List<Object?> get props => [
+    originalPost,
+    title,
+    newContent,
+    newImageFile,
+    imageIsRemoved,
+  ];
+}
