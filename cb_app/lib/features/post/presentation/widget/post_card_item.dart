@@ -55,8 +55,9 @@ class PostCardItem extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: Colors.blue.shade200,
-                      child: postDisplayEntity.authorAvatarUrl == null
+                      backgroundColor: Colors.blueAccent.shade200,
+                      child: postDisplayEntity.authorAvatarUrl == null ||
+                              postDisplayEntity.authorAvatarUrl!.isEmpty
                           ? const Icon(Icons.person, size: 28)
                           : ClipOval(
                               child: CachedNetworkImage(
@@ -87,7 +88,8 @@ class PostCardItem extends StatelessWidget {
               const SizedBox(height: 10),
               Text(postDisplayEntity.title),
               const SizedBox(height: 10),
-              if (postDisplayEntity.imageUrl != null) ...[
+              if (postDisplayEntity.imageUrl != null &&
+                  postDisplayEntity.imageUrl!.isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: CachedNetworkImage(

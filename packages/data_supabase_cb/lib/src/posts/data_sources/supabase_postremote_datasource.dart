@@ -101,7 +101,7 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
     try {
       if (_supabaseClient.auth.currentUser == null) {
         throw const AuthenticationException(
-          message: 'USER IS not authorized to update posts',
+          message: 'User is not authorized to update posts',
         );
       }
       final result = await _supabaseClient
@@ -171,13 +171,7 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
   }
 
   @override
-  Future<void> deletePost({required String postId}) {
-    // TODO: implement deletePost
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<PostCommentModel>> getPostComments({
+  Future<List<CommentDisplay>> getPostComments({
     required String postId,
     required int offset,
     required int limit,
@@ -195,7 +189,7 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
           .eq('post_id', postId)
           .range(offset, loadPageOffset);
       return commentsMap
-          .map((mapComments) => PostCommentModel.fromJson(mapComments))
+          .map((mapComments) => PostCommentDisplayModel.fromJson(mapComments))
           .toList();
     } on AuthenticationException {
       rethrow;
@@ -286,11 +280,11 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
 
       final result = await _supabaseClient
           .rpc(
-            DBFunctions.createCommentAndReturnCommentDisplayView,
+            DBFunctions.createNewCommentAndReturnLatestCommentDisplayView,
             params: {'p_post_id': postId, 'p_content': content},
           )
           .single();
-      return PostCommentModel.fromJson(result);
+      return PostCommentDisplayModel.fromJson(result);
     } on AuthenticationException {
       rethrow;
     } on PostgrestException catch (e) {
@@ -324,12 +318,12 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
             DBFunctions.updateCommentAndReturnCommentDisplayView,
             params: {
               'p_comment_id': commentId,
-              'p_new_comment': newContentUpdate,
+              'p_new_content': newContentUpdate,
             },
           )
           .single();
 
-      return PostCommentModel.fromJson(updateCommentResponse);
+      return PostCommentDisplayModel.fromJson(updateCommentResponse);
     } on AuthenticationException {
       rethrow;
     } on PostgrestException catch (e) {
@@ -355,7 +349,7 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
           message: 'User is not authenticated to delete the comment.',
         );
       }
-      await _supabaseClient.from(Tables.comments).delete().match({
+      await _supabaseClient.from(Tables.postcomments).delete().match({
         'id': commentId,
       });
     } on AuthenticationException {
@@ -368,6 +362,68 @@ class SupabasePostremoteDatasource implements PostRemoteDataSource {
         throw NotFoundException(message: e.message);
       }
       throw DatabaseException(message: e.message);
+    } on SocketException {
+      throw const NetworkException();
+    } catch (e) {
+      throw UnknownException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<void> deletePost({required String postId}) async {
+    try {
+      if (_supabaseClient.auth.currentUser == null) {
+        throw const AuthenticationException(
+          message: 'User is not authenticated to delete the post.',
+        );
+      }
+      await _supabaseClient.from(Tables.posts).delete().match({'id': postId});
+    } on AuthenticationException {
+      rethrow;
+    } on PostgrestException catch (e) {
+      if (e.code == PostgresErrors.insufficientPrivilege) {
+        throw PermissionException(message: e.message);
+      }
+      if (e.code == PostgresErrors.moreThanOneorMoreItemsreturned) {
+        throw NotFoundException(message: e.message);
+      }
+      throw DatabaseException(message: e.message);
+    } on SocketException {
+      throw const NetworkException();
+    } catch (e) {
+      throw UnknownException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<void> deletePostFolder({required String postId}) async {
+    try {
+      final userId = _supabaseClient.auth.currentUser?.id;
+      if (userId == null) {
+        throw const AuthenticationException(
+          message: 'User not authenticated to delete the image.',
+        );
+      }
+      final folderPath = 'public/$userId/$postId';
+      final fileList = await _supabaseClient.storage
+          .from(Storage.postImages)
+          .list(path: folderPath);
+
+      if (fileList.isEmpty) return;
+
+      final filesToRemove = fileList
+          .map((file) => '$folderPath/${file.name}')
+          .toList();
+      await _supabaseClient.storage
+          .from(Storage.postImages)
+          .remove(filesToRemove);
+    } on AuthenticationException {
+      rethrow;
+    } on StorageException catch (e) {
+      throw StorageServerException(
+        message:
+            'Storage bucket "${Storage.postImages}" is unavailable: ${e.message}',
+      );
     } on SocketException {
       throw const NetworkException();
     } catch (e) {

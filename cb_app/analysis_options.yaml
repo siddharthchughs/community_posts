@@ -8,6 +8,9 @@ analyzer:
    - test/**.mocks.dart
    - "**/*.g.dart"
    - "**.config.dart"
+   - android/**
+   - ios/**
+   - web/**
 
 linter:
   rules:

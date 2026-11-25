@@ -18,6 +18,17 @@ abstract interface class PostsRepository {
     String? imageUrl,
   });
 
+  Future<Either<Failure, void>> deletePost({required String postId});
+
+  Future<Either<Failure, void>> deletePostFolder({required String postId});
+
+  Future<Either<Failure, PostDisplay>> updatePost({
+    required String postId,
+    required String title,
+    required String content,
+    String? imageUrl,
+  });
+
   Future<Either<Failure, ImageUploadResult>> uploadPostImage({
     required File image,
     String? postId,

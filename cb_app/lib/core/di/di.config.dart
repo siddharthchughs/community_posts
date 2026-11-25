@@ -84,11 +84,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i458.GetPostCommentsUseCase>(
       () => registerModule.getPostCommentsUseCase,
     );
-    gh.factory<_i119.PostCommentsBloc>(
-      () => _i119.PostCommentsBloc(
-        getPostCommentsUsecases: gh<_i458.GetPostCommentsUseCase>(),
-      ),
+    gh.factory<_i458.DeletePostUseCase>(() => registerModule.deletePostUseCase);
+    gh.factory<_i458.DeletePostimageFolderUseCase>(
+      () => registerModule.deletePostimageFolderUseCase,
     );
+    gh.factory<_i458.UpdatePostUseCase>(() => registerModule.updatePostUseCase);
     gh.factory<_i1018.LoginBloc>(
       () => _i1018.LoginBloc(loginUsecase: gh<_i378.UserLoginUseCase>()),
     );
@@ -107,20 +107,34 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i41.SignupBloc>(
       () => _i41.SignupBloc(signupUsecase: gh<_i378.SignupUsecase>()),
     );
-    gh.singleton<_i583.GoRouter>(
-      () => registerModule.router(gh<_i652.AuthenticationBloc>()),
-    );
     gh.factory<_i686.PostFormBloc>(
       () => _i686.PostFormBloc(
         createPostUsecase: gh<_i458.CreatePostUseCase>(),
         uploadImageUsecase: gh<_i458.UploadPostImageUseCase>(),
         globalEventBus: gh<_i91.GlobalEventBus>(),
+        updatePostUseCase: gh<_i458.UpdatePostUseCase>(),
+        getPostDetailUseCase: gh<_i458.GetPostDetailUseCase>(),
       ),
+    );
+    gh.singleton<_i583.GoRouter>(
+      () => registerModule.router(gh<_i652.AuthenticationBloc>()),
     );
     gh.factory<_i557.PostDetailBloc>(
       () => _i557.PostDetailBloc(
         getPostDetailUseCase: gh<_i458.GetPostDetailUseCase>(),
         toogleLikeUseCase: gh<_i458.ToggleLikeUseCase>(),
+        globalEventBus: gh<_i91.GlobalEventBus>(),
+        deletePostUseCase: gh<_i458.DeletePostUseCase>(),
+        deletePostImageFolderUseCase: gh<_i458.DeletePostimageFolderUseCase>(),
+      ),
+    );
+    gh.factory<_i119.PostCommentsBloc>(
+      () => _i119.PostCommentsBloc(
+        getPostCommentsUsecases: gh<_i458.GetPostCommentsUseCase>(),
+        createCommentUseCase: gh<_i458.CreateCommentUseCase>(),
+        deleteCommentUseCase: gh<_i458.DeleteCommentUseCase>(),
+        updateCommentUseCase: gh<_i458.UpdateCommentUseCase>(),
+        getpostDetailUseCase: gh<_i458.GetPostDetailUseCase>(),
         globalEventBus: gh<_i91.GlobalEventBus>(),
       ),
     );
@@ -192,6 +206,20 @@ class _$RegisterModule extends _i291.RegisterModule {
       _i458.GetPostCommentsUseCase(
         postsRepository: _getIt<_i458.PostsRepository>(),
       );
+
+  @override
+  _i458.DeletePostUseCase get deletePostUseCase =>
+      _i458.DeletePostUseCase(postsRepository: _getIt<_i458.PostsRepository>());
+
+  @override
+  _i458.DeletePostimageFolderUseCase get deletePostimageFolderUseCase =>
+      _i458.DeletePostimageFolderUseCase(
+        postsRepository: _getIt<_i458.PostsRepository>(),
+      );
+
+  @override
+  _i458.UpdatePostUseCase get updatePostUseCase =>
+      _i458.UpdatePostUseCase(postsRepository: _getIt<_i458.PostsRepository>());
 
   @override
   _i458.CreatePostUseCase get createPostUsecases =>

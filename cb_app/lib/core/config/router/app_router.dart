@@ -68,7 +68,7 @@ GoRouter createRouter(AuthenticationBloc authBloc) {
         path: RouteLocation.userDetail,
         name: RouteNames.userDetail,
         builder: (context, state) {
-          final userId = state.pathParameters['userID'];
+          final userId = state.pathParameters['userId'];
           return UserProfilePage(userId: userId!);
         },
       ),

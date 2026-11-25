@@ -42,7 +42,7 @@ class CommentListView extends StatelessWidget {
                   : state.comments.length + 1,
               itemBuilder: (context, index) {
                 if (index > state.comments.length) {
-                  return state.uiState == PostCommentsUIState.fetchingMore
+                  return state.uiState == PostCommentsUIState.loadMore
                       ? const Center(
                           child: Padding(
                             padding: EdgeInsetsGeometry.all(16.0),

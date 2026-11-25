@@ -172,12 +172,12 @@ class PostRepsitoryImpl implements PostsRepository {
 
   @override
   Future<Either<Failure, CommentDisplay>> createComment({
-    required String postyId,
+    required String postId,
     required String newContent,
   }) async {
     try {
       final newComment = await _postRemoteDataSource.onCreateComment(
-        postId: postyId,
+        postId: postId,
         content: newContent,
       );
       return Right(newComment);
@@ -227,6 +227,70 @@ class PostRepsitoryImpl implements PostsRepository {
       final commentUpdatedResponse = await _postRemoteDataSource
           .onUpdateComment(commentId: commentId, newContentUpdate: newContent);
       return Right(commentUpdatedResponse);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deletePost({required String postId}) async {
+    try {
+      await _postRemoteDataSource.deletePost(postId: postId);
+      return const Right(null);
+    } on AuthenticationException catch (e) {
+      return Left(AuthenticationFailure(message: e.message));
+    } on PermissionException catch (e) {
+      return Left(PermissionFailure(message: e.message));
+    } on DatabaseException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on UnknownException catch (e) {
+      return Left(UnknownFailure(message: ' Post Liked error: ${e.message}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deletePostFolder({
+    required String postId,
+  }) async {
+    try {
+      await _postRemoteDataSource.deletePostFolder(postId: postId);
+      return const Right(null);
+    } catch (e) {
+      print('Error deleting post folder, but proceeding: $e');
+      return const Right(null);
+    }
+  }
+
+  @override
+  Future<Either<Failure, PostDisplay>> updatePost({
+    required String postId,
+    required String title,
+    required String content,
+    String? imageUrl,
+  }) async {
+    try {
+      final updatePost = await _postRemoteDataSource.updatePost(
+        postId: postId,
+        title: title,
+        content: content,
+        imageUrl: imageUrl,
+      );
+      print('Updated Post :: ${updatePost.likesCount.toString()}');
+      return Right(updatePost);
     } on AuthenticationException catch (e) {
       return Left(AuthenticationFailure(message: e.message));
     } on PermissionException catch (e) {

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class CommentDisplay extends Equatable {
   const CommentDisplay({
+    required this.id,
     required this.postId,
     required this.content,
     required this.createdAt,
@@ -9,6 +10,7 @@ class CommentDisplay extends Equatable {
     required this.authorUserName,
     this.authorAvatarUrl,
   });
+  final String id;
   final String postId;
   final String content;
   final DateTime createdAt;
@@ -19,6 +21,7 @@ class CommentDisplay extends Equatable {
   @override
   List<Object?> get props {
     return [
+      id,
       postId,
       content,
       createdAt,

@@ -17,6 +17,10 @@ abstract interface class PostRemoteDataSource {
     String? imageUrl,
   });
 
+  Future<void> deletePost({required String postId});
+
+  Future<void> deletePostFolder({required String postId});
+
   Future<PostsDisplayModel> updatePost({
     required String postId,
     required String title,
@@ -29,11 +33,9 @@ abstract interface class PostRemoteDataSource {
     String? postId,
   });
 
-  Future<void> deletePost({required String postId});
-
   Future<PostsDisplayModel> getPostDetail({required String postId});
 
-  Future<List<PostCommentModel>> getPostComments({
+  Future<List<CommentDisplay>> getPostComments({
     required String postId,
     required int offset,
     required int limit,

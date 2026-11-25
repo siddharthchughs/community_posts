@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:core/constants.dart';
 import 'package:core/utils.dart';
 import 'package:domain/posts.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import '../../../../core/di/di.dart';
 import '../../../auth/presentation/blocs/authentication/authentication_bloc.dart';
 import '../bloc/post_comments/post_comments_bloc.dart';
 import '../bloc/post_detail/post_detail_bloc.dart';
+import '../widget/comment_edit_view.dart';
 import '../widget/comment_list_view.dart';
 
 class PostDetailPage extends StatelessWidget {
@@ -32,7 +34,31 @@ class PostDetailPage extends StatelessWidget {
                 ..add(PostCommentsLoaded(postId: postId)),
         ),
       ],
-      child: PostDetailView(postId: postId),
+      child: BlocListener<PostDetailBloc, PostDetailState>(
+        listenWhen: (previous, current) {
+          final hasDeleted =
+              !previous.postDeletionSuccess && current.postDeletionSuccess;
+          final failedToDelete =
+              previous.transientFailure == null &&
+              current.transientFailure != null;
+          return hasDeleted || failedToDelete;
+        },
+        listener: (previous, state) {
+          if (state.postDeletionSuccess) {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) navigator.pop();
+            if (navigator.canPop()) navigator.pop();
+            return;
+          }
+          if (state.transientFailure != null) {
+            showSnackbar(context, message: state.transientFailure!.message);
+            context.read<PostDetailBloc>().add(
+              PostDetailTransientFailureConsumed(),
+            );
+          }
+        },
+        child: PostDetailView(postId: postId),
+      ),
     );
   }
 }
@@ -65,13 +91,68 @@ class _PostDetailViewState extends State<PostDetailView> {
     if (_scrollController.position.pixels >
         _scrollController.position.maxScrollExtent - 200) {
       context.read<PostCommentsBloc>().add(
-        PostCommentsLoadedMore(postId: widget.postId),
+        PostCommentsLoadMore(postId: widget.postId),
       );
     }
   }
 
+  void _showDeleteConfirmDialog(BuildContext context) {
+    final postDetailBloc = context.read<PostDetailBloc>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BlocProvider.value(
+          value: postDetailBloc,
+          child: BlocBuilder<PostDetailBloc, PostDetailState>(
+            builder: (context, state) {
+              final _isSubmitting = state.status == PostDetailStatus.submitting;
+              return PopScope(
+                canPop: !_isSubmitting,
+                child: AlertDialog(
+                  title: const Text('Confirm Deletion'),
+                  content: const Text(
+                    'Are you sure you want to delete the post!',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: _isSubmitting
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: _isSubmitting
+                          ? null
+                          : () {
+                              postDetailBloc.add(const PostDeletedEvent());
+                            },
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+      barrierDismissible:
+          postDetailBloc.state.status == PostDetailStatus.submitting,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.select(
+      (AuthenticationBloc bloc) => bloc.state.user,
+    );
+    final currentUserRole = currentUser?.role;
     return BlocBuilder<PostDetailBloc, PostDetailState>(
       builder: (context, state) {
         switch (state.status) {
@@ -91,9 +172,45 @@ class _PostDetailViewState extends State<PostDetailView> {
             );
           case _:
             final post = state.post!;
+            final canModfyPost =
+                (currentUser?.id == post.authorID) &&
+                (currentUserRole == Role.admin);
+
             return Scaffold(
-              appBar: AppBar(title: Text(post.title)),
-              body: _buildContent(context, post),
+              appBar: AppBar(
+                title: Text(post.title),
+                actions: [
+                  if (canModfyPost)
+                    IconButton(
+                      onPressed: () {
+                        context.pushNamed(
+                          RouteNames.postEdit,
+                          pathParameters: {'postId': post.postId},
+                        );
+                      },
+                      icon: const Icon(Icons.edit_outlined),
+                      tooltip: 'Edit Post',
+                    ),
+                  if (canModfyPost)
+                    IconButton(
+                      onPressed: () {
+                        _showDeleteConfirmDialog(context);
+                      },
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: 'Delete Post',
+                    ),
+                ],
+              ),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(child: _buildContent(context, post)),
+                  CommentEditView(
+                    postId: widget.postId,
+                    scrollController: _scrollController,
+                  ),
+                ],
+              ),
             );
         }
       },
@@ -102,15 +219,15 @@ class _PostDetailViewState extends State<PostDetailView> {
 
   Widget _buildContent(BuildContext context, PostDisplay post) {
     return BlocListener<PostCommentsBloc, PostCommentsState>(
-      listenWhen: (previous, current) {
-        final prevTransientFailure = previous.transientFailure;
-        final currentTransientFailure = current.transientFailure;
+      listenWhen: (previousFailure, currentFailure) {
+        final prevTransientFailure = previousFailure.transientFailure;
+        final currentTransientFailure = currentFailure.transientFailure;
         final isTransientFailure =
             prevTransientFailure == null && currentTransientFailure != null;
         return isTransientFailure;
       },
-      listener: (context, state) {
-        showSnackbar(context, message: state.transientFailure!.message);
+      listener: (context, errorState) {
+        showSnackbar(context, message: errorState.transientFailure!.message);
         context.read<PostCommentsBloc>().add(
           const PostCommentsTransientFailureConsumed(),
         );
@@ -155,7 +272,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                   ?.id;
               if (currentUserId != post.authorID) {
                 context.pushNamed(
-                  RouteNames.postDetail,
+                  RouteNames.userDetail,
                   pathParameters: {'userId': post.authorID},
                 );
               }
@@ -165,7 +282,8 @@ class _PostDetailViewState extends State<PostDetailView> {
                 CircleAvatar(
                   radius: 38,
                   backgroundColor: Colors.amberAccent,
-                  child: post.authorAvatarUrl == null
+                  child: post.authorAvatarUrl == null ||
+                          post.authorAvatarUrl!.isEmpty
                       ? const Icon(Icons.person_2, size: 24, color: Colors.blue)
                       : ClipOval(
                           child: CachedNetworkImage(
@@ -237,11 +355,15 @@ class _PostDetailViewState extends State<PostDetailView> {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () {
-                        context.read<PostDetailBloc>().add(
-                          const PostDetailLikeToggled(),
-                        );
-                      },
+                      onPressed:
+                          context.read<PostDetailBloc>().state.status ==
+                              PostDetailStatus.submitting
+                          ? null
+                          : () {
+                              context.read<PostDetailBloc>().add(
+                                const PostDetailLikeToggled(),
+                              );
+                            },
                       icon: Icon(
                         post.currentUserLiked
                             ? Icons.thumb_up

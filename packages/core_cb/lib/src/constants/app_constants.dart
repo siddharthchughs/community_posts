@@ -5,14 +5,14 @@ abstract class Role {
 
 abstract class Tables {
   static const String posts = 'posts';
-  static const String comments = 'comments';
+  static const String postcomments = 'post_comments';
   static const String profiles = 'profiles';
   static const String likes = 'likes';
 }
 
 abstract class Views {
   static const String postDisplayViews = 'post_display_view';
-  static const String commentDisplayViews = 'comment_display_view';
+  static const String commentDisplayViews = 'post_comment_display_view';
 }
 
 abstract class Storage {
@@ -29,8 +29,8 @@ abstract class DBFunctions {
       'create_post_and_return_post_display_view';
   static const String updatePostAndReturnPostDisplayView =
       'update_post_and_return_post_display_view';
-  static const String createCommentAndReturnCommentDisplayView =
-      'create_comment_and_return_comment_display_view';
+  static const String createNewCommentAndReturnLatestCommentDisplayView =
+      'create_new_comment_and_return_latest_comment_display_view';
   static const String updateCommentAndReturnCommentDisplayView =
       'update_comment_and_return_comment_display_view';
 }

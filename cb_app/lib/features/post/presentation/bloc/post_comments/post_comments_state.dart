@@ -5,7 +5,7 @@ enum PostCommentsUIState {
   loading,
   loaded,
   failure,
-  fetchingMore,
+  loadMore,
   refilling,
   refreshing,
   submitting,
